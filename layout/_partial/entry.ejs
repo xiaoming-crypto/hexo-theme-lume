@@ -1,0 +1,50 @@
+<%
+  const listOptions = theme.list || {};
+  const categories = (post.categories && post.categories.toArray) ? post.categories.toArray() : [];
+  const primaryCategory = categories.length ? categories[0] : null;
+  const tags = (post.tags && post.tags.toArray) ? post.tags.toArray() : [];
+  const excerpt = listOptions.showExcerpt === false ? '' : lume_excerpt(post, listOptions.excerptLength || 120);
+  const minutes = lume_reading_time(post.content);
+  const order = String(index + 1).padStart(2, '0');
+  const cover = post.cover || '';
+  const showThumb = listOptions.showThumb !== false && cover;
+%>
+<article class="entry"<% if (cover && listOptions.showCoverPeek !== false) { %> data-cover="<%= cover %>"<% } %> data-reveal style="--i: <%= Math.min(index, 7) %>">
+  <a class="entry__link" href="<%= url_for(post.path) %>">
+    <span class="entry__index" aria-hidden="true"><%= order %></span>
+
+    <span class="entry__body">
+      <span class="entry__meta">
+        <time datetime="<%= date_xml(post.date) %>"><%= date(post.date, 'YYYY-MM-DD') %></time>
+        <% if (primaryCategory) { %>
+          <span class="entry__dot" aria-hidden="true">·</span>
+          <span class="entry__cat"><%= primaryCategory.name %></span>
+        <% } %>
+        <% if (listOptions.showReadingTime !== false) { %>
+          <span class="entry__dot" aria-hidden="true">·</span>
+          <span><%= minutes %> <%= __('post.minutes') %></span>
+        <% } %>
+      </span>
+
+      <span class="entry__title"><%= post.title %></span>
+
+      <% if (excerpt) { %><span class="entry__excerpt"><%= excerpt %></span><% } %>
+
+      <% if (tags.length) { %>
+        <span class="entry__tags">
+          <% tags.slice(0, 3).forEach(function (tag) { %><span class="pill">#<%= tag.name %></span><% }); %>
+        </span>
+      <% } %>
+    </span>
+
+    <% if (showThumb) { %>
+      <span class="entry__thumb" aria-hidden="true">
+        <img src="<%= cover %>" alt="" loading="lazy" decoding="async">
+      </span>
+    <% } %>
+
+    <span class="entry__arrow" aria-hidden="true">
+      <svg viewBox="0 0 24 24" focusable="false"><path d="M7 17 17 7M9 7h8v8"></path></svg>
+    </span>
+  </a>
+</article>

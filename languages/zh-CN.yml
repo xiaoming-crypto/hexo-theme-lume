@@ -1,0 +1,104 @@
+nav:
+  search: 搜索
+  menu: 菜单
+  close: 关闭
+  home: 首页
+  theme: 切换主题
+
+a11y:
+  skip: 跳到正文
+  toTop: 回到顶部
+  theme: 切换明暗主题
+  search: 打开搜索
+  menu: 打开菜单
+  nav: 站点导航
+  music: 音乐播放器
+  random: 随便逛逛
+  travelling: 开往
+
+action:
+  copy: 复制
+  copied: 已复制
+  copying: 复制中…
+  copyFailed: 复制失败
+
+post:
+  minutes: 分钟阅读
+  words: 字
+  updated: 更新于
+  toc: 目录
+  prev: 上一篇
+  next: 下一篇
+  license: 版权声明
+  comments: 评论
+  commentsLoading: 评论加载中…
+
+search:
+  title: 搜索
+  intro: 输入关键词，检索本站全部文章。
+  placeholder: 搜索文章、标签或关键词…
+  submit: 搜索
+  empty: 没有找到相关内容
+  emptyHint: 换一个关键词试试，或前往归档浏览全部文章。
+  found: 篇文章匹配
+  popular: 热门标签
+  loading: 正在加载索引…
+  hintUpDown: 选择
+  hintEnter: 打开
+  hintClose: 关闭
+  shortcut: 快速搜索
+
+archive:
+  title: 归档
+  all: 全部文章
+  count: 共
+
+categories:
+  title: 分类
+  intro: 按主题浏览全部文章。
+
+tags:
+  title: 标签
+  intro: 从一个词开始，找到相关的文字。
+
+about:
+  eyebrow: 关于
+
+music:
+  title: 音乐
+  intro: 一边听歌，一边逛逛。
+  now: 正在播放
+  play: 播放
+  pause: 暂停
+  prev: 上一首
+  next: 下一首
+  volume: 音量
+  loading: 歌单加载中…
+  error: 歌单暂时加载失败，稍后再试。
+  retry: 重新加载
+  playlist: 全部歌单
+  capsule: 听点歌
+
+friends:
+  title: 友链
+  intro: 互联网上的邻居们，都是有趣的人。
+  fishing: 钓鱼
+  cast: 抛竿
+  casting: 抛竿中…
+  got: 钓到了
+  empty: 今日鱼塘有点安静
+  feed: 友链朋友圈
+  refresh: 换一批
+  count: 位朋友
+  visit: 去看看
+  loading: 正在打捞小伙伴们的新文章…
+
+error:
+  title: 页面未找到
+  intro: 你要找的内容可能已被移动、删除，或者从未存在。
+  home: 返回首页
+  search: 搜索文章
+  archive: 浏览归档
+
+footer:
+  toTop: 回到顶部

@@ -1,0 +1,234 @@
+# ===============================================================
+# Lume — a playful, sticker-scrapbook theme for Hexo
+# ---------------------------------------------------------------
+# 该文件是主题默认配置。请在站点根目录创建 _config.lume.yml 覆盖，
+# 不要直接修改 themes/lume/_config.yml，以便日后升级主题。
+# 详细说明见 themes/lume/README.md
+# ===============================================================
+
+# 主题模式：auto 跟随系统 / light 始终浅色 / dark 始终深色
+# 用户在页面上的手动切换会保存在浏览器本地。
+scheme: auto
+
+# 品牌主色（取自站点 logo 的橙色）。深色模式使用 accentDark。
+accent: "#f5822a"
+accentDark: "#ffa45c"
+
+# 颜色相关设置
+color:
+  # 文本选中色
+  textSelection: "#ffd166"
+  # 文章主色调：读取封面图片颜色，驱动当前文章的强调色
+  mainTone:
+    # 需要自建颜色提取服务后开启，并把地址填到 api
+    enable: false
+    # 颜色服务地址，后接 URL 编码后的封面图片。示例：
+    # api: "https://color.example.com/api?img="
+    api: ""
+    # 整篇文章的强调色跟随封面变化
+    coverChange: true
+
+# 顶部导航。path 需与 Hexo 路由一致。
+# 留空时使用内置的精简导航。
+menu: []
+
+# 站点标识
+brand:
+  # 站点 logo 图片（优先于 mark），需透明背景的 PNG/SVG，例如 "/img/logo.png"
+  logo: ""
+  # 没有 logo 时显示的单字印章，留空则取站点标题首字
+  mark: ""
+  showTitle: true
+
+# 首页首屏
+hero:
+  # 标题上方的小字，留空则显示站点标题
+  eyebrow: ""
+  # 巨型标题，每行一项，最多建议 2 行；留空则使用站点标题
+  lines: []
+  # 标题下方的介绍，留空则使用站点描述
+  intro: ""
+
+# 文章列表
+list:
+  showExcerpt: true
+  excerptLength: 120
+  # 桌面端悬停时跟随光标的封面浮窗
+  showCoverPeek: true
+  showReadingTime: true
+  # 列表卡片中始终显示的封面缩略图
+  showThumb: true
+
+# 文章页
+post:
+  showCover: true
+  showToc: true
+  showReadingTime: true
+  showWordCount: true
+  showUpdated: true
+  prevNext: true
+  # 版权说明，留空则不显示版权框
+  license: ""
+
+# 打赏（仅展示收款码，不接入任何真实支付）
+# 默认关闭；开启后文章底部会出现打赏入口，弹层内展示你提供的微信 / 支付宝收款码。
+# 图片建议放在 source/img/reward/ 下，填写以 / 开头的站内路径或完整 https 地址。
+reward:
+  enable: false
+  title: 请我喝杯咖啡
+  intro: 如果这篇内容帮到了你，可以请我喝杯咖啡。
+  note: 扫码仅用于展示收款码，本站不会发起扣款，也不会收集任何支付信息。
+  methods:
+    wechat:
+      label: 微信
+      image: ""
+    alipay:
+      label: 支付宝
+      image: ""
+
+# 搜索（主题自动生成 /search.json、/search/ 与搜索浮层）
+search:
+  enable: true
+  # 浮层最多展示的结果数
+  maxResults: 12
+
+# 音乐胶囊 + 音乐页（网易云歌单，通过 Meting API 读取）
+# 需要可用的 Meting API 与歌单 ID，默认关闭。
+music:
+  enable: false
+  # 歌单 ID，例如 "1234567890"
+  id: ""
+  # netease / tencent / kugou / xiami / baidu
+  server: "netease"
+  # 默认音量 0~1
+  volume: 0.7
+  # Meting API 地址（不含参数），例如 "https://meting.example.com/api"
+  api: ""
+  # 备用 Meting API 地址，主接口超时或失败时自动切换
+  fallbackApi: ""
+  # 网易云歌单页，用于“查看完整歌单”，留空则隐藏入口
+  playlistUrl: ""
+  # 左下角音乐胶囊
+  capsule: true
+
+# 友链页与友链朋友圈
+friends:
+  # Friend-Circle-Lite 后端地址，留空则隐藏友链朋友圈与钓鱼玩法
+  # 示例："https://fc.example.com/"
+  api: ""
+  # 朋友圈每次加载的文章数
+  pageSize: 12
+  # 钓鱼玩法
+  fishing: true
+  # 钓鱼文案
+  tips:
+    - 钓到了绝世好文！
+    - 在河边打了个喷嚏，吓跑了
+    - 你和小伙伴抢夺着
+    - 你击败了巨龙，在巢穴中发现了
+    - 挖掘秦始皇坟时找到了
+    - 在路边闲逛的时候随手买了一个
+    - 从图书馆顶层的隐秘角落里发现了闪着金光的
+    - 外星人降临地球学习地球文化，落地时被你塞了
+    - 科考队在南极大陆发现了被冰封的
+    - 今日双色球中了两千万，预测全靠
+
+# 开往
+travelling:
+  enable: true
+  url: "https://www.travellings.cn/go.html"
+
+# 随便逛逛：随机打开一篇站内文章
+randomPost:
+  enable: true
+
+# 页脚
+footer:
+  note: ""
+  # 起始年份，如 2024；留空则自动取最早文章年份
+  since: ""
+  poweredBy: true
+  # 页脚右侧附加说明，可留空
+  license: ""
+  # 备案信息，留空则不显示
+  icp:
+    text: ""
+    link: "https://beian.miit.gov.cn/"
+  police:
+    text: ""
+    link: ""
+
+# 社交链接。name 会作为链接文字，url 为地址。
+social: []
+
+# RSS 地址，留空则不显示订阅入口
+rss: ""
+# 站点图标
+favicon: ""
+appleTouchIcon: ""
+
+# SEO
+seo:
+  # 默认分享图（文章未设置 cover 时使用）
+  ogImage: ""
+  # Twitter / X 账号，如 @yourname
+  twitter: ""
+  # 额外关键词，会与文章 keywords 合并
+  keywords: ""
+  robots: "index, follow"
+
+# 关于页（也可在 about 页面的 front-matter 中逐项覆盖）
+about:
+  avatar: ""
+  name: ""
+  role: ""
+  bio: ""
+  # - label: 坐标
+  #   value: 中国 · 山西
+  facts: []
+  # - 全栈开发
+  skills: []
+
+# 评论（默认关闭）。支持 twikoo / giscus。
+comments:
+  enable: false
+  provider: twikoo
+  # 进入视口后再加载脚本
+  lazyload: true
+  twikoo:
+    envId: ""
+    region: ""
+    lang: "zh-CN"
+    # 留空使用主题内置 CDN
+    cdn: ""
+    # 在文章页显示评论数
+    count: true
+    visitor: false
+  giscus:
+    repo: ""
+    repoId: ""
+    category: "Announcements"
+    categoryId: ""
+    mapping: "pathname"
+    strict: "0"
+    reactionsEnabled: "1"
+    inputPosition: "top"
+    theme: "preferred_color_scheme"
+    lang: "zh-CN"
+
+# 统计（可选）。留空则不注入任何脚本。
+analytics:
+  google: ""
+  umami:
+    src: ""
+    websiteId: ""
+
+# 动效开关。无论开关如何，prefers-reduced-motion 始终优先。
+motion:
+  pageTransitions: true
+  reveal: true
+  heroParallax: true
+  peek: true
+  themeRipple: true
+  # 鼠标点击时的小纸屑/星星
+  confetti: true

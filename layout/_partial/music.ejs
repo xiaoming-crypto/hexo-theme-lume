@@ -1,0 +1,72 @@
+<%
+  const m = theme.music || {};
+%>
+<section class="music-page" data-music-page
+         data-id="<%= m.id || '' %>"
+         data-server="<%= m.server || 'netease' %>"
+         data-api="<%= m.api || '' %>"
+         data-fallback-api="<%= m.fallbackApi || '' %>"
+         data-label-play="<%= __('music.play') %>"
+         data-label-pause="<%= __('music.pause') %>"
+         data-label-loading="<%= __('music.loading') %>"
+         data-label-error="<%= __('music.error') %>"
+         data-label-retry="<%= __('music.retry') %>">
+  <header class="music-hero" data-reveal>
+    <div class="music-hero__copy">
+      <p class="eyebrow"><span aria-hidden="true">🎧</span> <%= __('music.title') %></p>
+      <h1>把耳朵借给我</h1>
+      <p><%= __('music.intro') %></p>
+      <% if (m.playlistUrl) { %>
+        <a class="btn btn--ghost" href="<%= m.playlistUrl %>" target="_blank" rel="noopener noreferrer">网易云歌单 <span aria-hidden="true">↗</span></a>
+      <% } %>
+    </div>
+    <div class="music-hero__disc" aria-hidden="true">
+      <span class="music-hero__vinyl"><i></i></span>
+      <img data-music-disc alt="" width="96" height="96">
+    </div>
+  </header>
+
+  <div class="music-grid">
+    <div class="music-now" data-reveal>
+      <div class="music-now__cover">
+        <img data-page-music-cover alt="" width="220" height="220">
+        <span class="music-now__badge"><%= __('music.now') %></span>
+      </div>
+      <div class="music-now__info">
+        <strong data-page-music-title><%= __('music.loading') %></strong>
+        <span data-page-music-artist></span>
+      </div>
+      <div class="music-now__bar">
+        <input type="range" min="0" max="1000" value="0" step="1" data-music-progress aria-label="<%= __('music.now') %>">
+        <span data-music-time>0:00 / 0:00</span>
+      </div>
+      <div class="music-now__controls">
+        <button type="button" data-music-prev aria-label="<%= __('music.prev') %>">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 5v14M18 6l-9 6 9 6V6Z"/></svg>
+        </button>
+        <button class="music-now__play" type="button" data-music-play aria-label="<%= __('music.play') %>">
+          <svg class="i-play" viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5.5v13l11-6.5-11-6.5Z"/></svg>
+          <svg class="i-pause" viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5h3v14H8zM13 5h3v14h-3z"/></svg>
+        </button>
+        <button type="button" data-music-next aria-label="<%= __('music.next') %>">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M18 5v14M6 6l9 6-9 6V6Z"/></svg>
+        </button>
+      </div>
+    </div>
+
+    <div class="music-list-card" data-reveal style="--i: 2">
+      <header class="music-list-card__head">
+        <h2><%= __('music.playlist') %> <span data-music-count>—</span></h2>
+        <button class="music-list__toggle" type="button" data-music-list-toggle aria-expanded="false" aria-controls="music-list-body">
+          <span data-music-list-toggle-label>展开歌单</span>
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg>
+        </button>
+      </header>
+      <div class="music-list__body" id="music-list-body">
+        <ol class="music-list" data-music-list>
+          <li class="music-list__empty"><%= __('music.loading') %></li>
+        </ol>
+      </div>
+    </div>
+  </div>
+</section>

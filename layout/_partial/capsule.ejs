@@ -1,0 +1,63 @@
+<%
+  const m = theme.music || {};
+  if (m.enable && m.capsule !== false) {
+%>
+<div class="capsule" data-music-capsule
+     data-id="<%= m.id || '' %>"
+     data-server="<%= m.server || 'netease' %>"
+     data-api="<%= m.api || '' %>"
+     data-fallback-api="<%= m.fallbackApi || '' %>"
+     data-volume="<%= typeof m.volume === 'number' ? m.volume : 0.7 %>"
+     data-playlist="<%= m.playlistUrl || '#' %>"
+     data-label-play="<%= __('music.play') %>"
+     data-label-pause="<%= __('music.pause') %>"
+     data-label-loading="<%= __('music.loading') %>"
+     data-label-error="<%= __('music.error') %>"
+     data-label-capsule="<%= __('music.capsule') %>">
+  <audio data-music-audio preload="none"></audio>
+
+  <div class="capsule__panel" data-music-panel aria-hidden="true">
+    <div class="capsule__art">
+      <span class="capsule__vinyl" aria-hidden="true"></span>
+      <img data-music-cover alt="" width="72" height="72">
+    </div>
+    <div class="capsule__now">
+      <small><%= __('music.now') %></small>
+      <strong data-music-title><%= __('music.loading') %></strong>
+      <span data-music-artist></span>
+    </div>
+    <div class="capsule__progress">
+      <input type="range" min="0" max="1000" value="0" step="1" data-music-progress aria-label="<%= __('music.now') %>">
+      <span data-music-time>0:00 / 0:00</span>
+    </div>
+    <div class="capsule__controls">
+      <button type="button" data-music-prev aria-label="<%= __('music.prev') %>">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 5v14M18 6l-9 6 9 6V6Z"/></svg>
+      </button>
+      <button class="capsule__play" type="button" data-music-play aria-label="<%= __('music.play') %>">
+        <svg class="i-play" viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5.5v13l11-6.5-11-6.5Z"/></svg>
+        <svg class="i-pause" viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5h3v14H8zM13 5h3v14h-3z"/></svg>
+      </button>
+      <button type="button" data-music-next aria-label="<%= __('music.next') %>">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M18 5v14M6 6l9 6-9 6V6Z"/></svg>
+      </button>
+      <label class="capsule__vol">
+        <span aria-hidden="true">🔊</span>
+        <input type="range" min="0" max="100" value="70" step="1" data-music-volume aria-label="<%= __('music.volume') %>">
+      </label>
+      <a class="capsule__all" href="<%= url_for('/music/') %>" data-music-all><%= __('music.playlist') %></a>
+    </div>
+  </div>
+
+  <button class="capsule__pill" type="button" data-music-toggle aria-expanded="false" aria-label="<%= __('a11y.music') %>">
+    <span class="capsule__disc">
+      <img data-music-disc alt="" width="32" height="32">
+    </span>
+    <span class="capsule__label">
+      <b data-music-pill><%= __('music.capsule') %></b>
+      <small>LUME RADIO</small>
+    </span>
+    <span class="capsule__eq" aria-hidden="true"><i></i><i></i><i></i></span>
+  </button>
+</div>
+<% } %>

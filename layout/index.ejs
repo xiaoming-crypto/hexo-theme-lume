@@ -1,0 +1,105 @@
+<%
+  const hero = theme.hero || {};
+  const isFirst = !page.current || page.current === 1;
+  const lines = (Array.isArray(hero.lines) && hero.lines.length) ? hero.lines : [config.title];
+  const eyebrow = hero.eyebrow || (config.subtitle ? config.title + ' · ' + config.subtitle : config.title);
+  const intro = hero.intro || config.description || '';
+  const totalPosts = site.posts ? site.posts.length : 0;
+  const totalCategories = site.categories ? site.categories.length : 0;
+  const posts = site.posts.toArray ? site.posts.toArray() : (site.posts.data || []);
+  const years = posts.map(function (p) { return p.date.format('YYYY'); }).sort();
+  const since = years.length ? years[0] : '';
+  const randomPost = theme.randomPost || {};
+  const music = theme.music || {};
+  const featured = isFirst && page.posts && page.posts.length
+    ? (page.posts.toArray ? page.posts.toArray()[0] : page.posts.data[0])
+    : null;
+%>
+<% if (isFirst) { %>
+<section class="hero" data-hero>
+  <div class="hero__inner" data-hero-inner>
+    <div class="hero__copy">
+      <p class="hero__eyebrow" data-reveal>
+        <span class="hero__eyebrow-emoji" aria-hidden="true">✦</span>
+        <%= eyebrow %>
+      </p>
+
+      <h1 class="hero__title">
+        <% lines.forEach(function (line, index) { %>
+          <span class="hero__line"><span class="hero__line-inner" style="--i: <%= index %>"><%= line %></span></span>
+        <% }) %>
+      </h1>
+
+      <% if (intro) { %>
+        <p class="hero__intro" data-reveal style="--i: 4"><%= intro %></p>
+      <% } %>
+
+      <div class="hero__actions" data-reveal style="--i: 5">
+        <a class="btn btn--pop" href="#latest">开始阅读 <span aria-hidden="true">→</span></a>
+        <% if (randomPost.enable) { %>
+          <button class="btn btn--ghost" type="button" data-random-post>🎲 随便逛逛</button>
+        <% } %>
+        <% if (music.enable) { %>
+          <a class="btn btn--ghost" href="<%= url_for('/music/') %>">🎧 听歌</a>
+        <% } %>
+      </div>
+
+      <div class="hero__stats" data-reveal style="--i: 6">
+        <span class="hero__stat" style="--tilt: -2deg"><em><%= totalPosts %></em><span>篇文章</span></span>
+        <span class="hero__stat" style="--tilt: 1.5deg"><em><%= totalCategories %></em><span>个分类</span></span>
+        <% if (since) { %><span class="hero__stat" style="--tilt: -1deg"><em><%= since %></em><span>年至今</span></span><% } %>
+      </div>
+    </div>
+
+    <div class="hero__stack" data-reveal style="--i: 3">
+      <% if (featured) { %>
+      <a class="hero-card" href="<%= url_for(featured.path) %>">
+        <span class="hero-card__tape" aria-hidden="true"></span>
+        <% if (featured.cover) { %>
+          <span class="hero-card__cover">
+            <span class="hero-card__cover-fallback" aria-hidden="true">
+              <span class="hero-card__cover-doodle">✎</span>
+              <span class="hero-card__cover-label">LATEST NOTE</span>
+            </span>
+            <img src="<%= featured.cover %>" alt="" loading="eager" fetchpriority="high" decoding="async" onerror="this.remove()">
+          </span>
+        <% } %>
+        <span class="hero-card__meta">
+          <span class="hero-card__badge">最新</span>
+          <time datetime="<%= date_xml(featured.date) %>"><%= date(featured.date, 'YYYY-MM-DD') %></time>
+        </span>
+        <strong class="hero-card__title"><%= featured.title %></strong>
+        <span class="hero-card__more">读这篇 <span aria-hidden="true">→</span></span>
+      </a>
+      <% } %>
+      <span class="hero-sticker hero-sticker--a" aria-hidden="true">✦</span>
+      <span class="hero-sticker hero-sticker--b" aria-hidden="true">☺</span>
+      <span class="hero-sticker hero-sticker--c" aria-hidden="true">♪</span>
+      <span class="hero-sticker hero-sticker--d" aria-hidden="true">☕</span>
+    </div>
+  </div>
+</section>
+
+<% } else { %>
+<header class="page-head">
+  <p class="eyebrow">Page <%= String(page.current).padStart(2, '0') %></p>
+  <h1><%= config.title %></h1>
+  <p class="page-head__meta">第 <%= page.current %> / <%= page.total %> 页</p>
+</header>
+<% } %>
+
+<section class="feed" id="latest" aria-labelledby="latest-title">
+  <header class="section-head" data-reveal>
+    <h2 id="latest-title"><span class="section-head__emoji" aria-hidden="true">✍️</span><%= isFirst ? '最新文章' : '继续阅读' %></h2>
+    <span class="section-head__count"><%= totalPosts %> 篇</span>
+    <span class="section-head__rule" aria-hidden="true"></span>
+  </header>
+
+  <div class="entries">
+    <% page.posts.each(function (post, index) { %>
+      <%- partial('_partial/entry', { post: post, index: index }) %>
+    <% }) %>
+  </div>
+
+  <%- partial('_partial/pagination') %>
+</section>

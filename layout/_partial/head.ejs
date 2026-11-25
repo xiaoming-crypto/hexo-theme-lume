@@ -1,0 +1,152 @@
+<%
+  const pd = (typeof pageData !== 'undefined' && pageData) ? pageData : {};
+  const seo = theme.seo || {};
+  const layout = pd.layout || '';
+
+  let heading = pd.title;
+  if (!heading && pd.archive) {
+    if (pd.year && pd.month && pd.day) {
+      heading = pd.year + '-' + String(pd.month).padStart(2, '0') + '-' + String(pd.day).padStart(2, '0');
+    } else if (pd.year && pd.month) {
+      heading = pd.year + ' 年 ' + pd.month + ' 月';
+    } else if (pd.year) {
+      heading = pd.year + ' 年';
+    } else {
+      heading = __('archive.title');
+    }
+  }
+  if (!heading && typeof pd.category === 'string') heading = pd.category;
+  if (!heading && typeof pd.tag === 'string') heading = pd.tag;
+  if (!heading && layout === 'search') heading = __('search.title');
+  if (!heading && layout === '404') heading = __('error.title');
+
+  let pageTitle = heading ? heading + ' · ' + config.title : config.title;
+  if (!heading && config.subtitle) pageTitle = config.title + ' — ' + config.subtitle;
+
+  const description = pd.description || (pd.excerpt ? strip_html(pd.excerpt) : (config.description || ''));
+  const canonical = full_url_for((!pd.path || pd.path === 'index.html') ? '/' : pd.path);
+  const cover = pd.cover || seo.ogImage;
+  const ogImage = cover ? (/^https?:\/\//i.test(cover) ? cover : full_url_for(cover)) : '';
+  const robots = (layout === 'search' || layout === '404')
+    ? 'noindex, follow'
+    : (seo.robots || 'index, follow');
+
+  const tagList = pd.tags && pd.tags.toArray ? pd.tags.toArray().map(tag => tag.name) : [];
+  const catList = pd.categories && pd.categories.toArray ? pd.categories.toArray().map(cat => cat.name) : [];
+  const keywords = []
+    .concat(pd.keywords || [], tagList, seo.keywords ? [seo.keywords] : [])
+    .filter(Boolean)
+    .join(', ');
+
+  const isPost = layout === 'post';
+  const isoDate = pd.date ? (pd.date.toISOString ? pd.date.toISOString() : pd.date) : '';
+  const isoUpdated = pd.updated ? (pd.updated.toISOString ? pd.updated.toISOString() : pd.updated) : isoDate;
+  const authorName = pd.author || config.author || config.title;
+  const locale = String(config.language || 'zh-CN').replace('-', '_');
+  const siteUrl = full_url_for('/');
+
+  const socialImage = ogImage ? [ogImage] : undefined;
+
+  let graph;
+  if (isPost) {
+    graph = {
+      '@context': 'https://schema.org',
+      '@type': 'BlogPosting',
+      headline: pd.title || pageTitle,
+      description: description,
+      datePublished: isoDate,
+      dateModified: isoUpdated,
+      author: { '@type': 'Person', name: authorName },
+      image: socialImage,
+      articleSection: catList.length ? catList[0] : undefined,
+      url: canonical,
+      mainEntityOfPage: { '@type': 'WebPage', '@id': canonical },
+      publisher: { '@type': 'Organization', name: config.title, url: siteUrl }
+    };
+    if (keywords) graph.keywords = keywords;
+    if (!socialImage) delete graph.image;
+
+    const breadcrumb = {
+      '@context': 'https://schema.org',
+      '@type': 'BreadcrumbList',
+      itemListElement: [
+        { '@type': 'ListItem', position: 1, name: config.title, item: siteUrl },
+        { '@type': 'ListItem', position: 2, name: pd.title || pageTitle, item: canonical }
+      ]
+    };
+    graph = [graph, breadcrumb];
+  } else if (!layout || layout === 'index') {
+    graph = {
+      '@context': 'https://schema.org',
+      '@type': 'WebSite',
+      name: config.title,
+      url: siteUrl,
+      description: description,
+      potentialAction: {
+        '@type': 'SearchAction',
+        target: full_url_for('search/') + '?q={search_term_string}',
+        'query-input': 'required name=search_term_string'
+      }
+    };
+  } else {
+    graph = {
+      '@context': 'https://schema.org',
+      '@type': 'WebPage',
+      name: pageTitle,
+      description: description,
+      url: canonical,
+      isPartOf: { '@type': 'WebSite', name: config.title, url: siteUrl }
+    };
+  }
+%>
+<title data-managed-meta><%= pageTitle %></title>
+<meta data-managed-meta name="description" content="<%= description %>">
+<meta data-managed-meta name="author" content="<%= authorName %>">
+<meta data-managed-meta name="robots" content="<%= robots %>">
+<link data-managed-meta rel="canonical" href="<%= canonical %>">
+<% if (keywords) { %><meta data-managed-meta name="keywords" content="<%= keywords %>"><% } %>
+
+<meta data-managed-meta property="og:type" content="<%= isPost ? 'article' : 'website' %>">
+<meta data-managed-meta property="og:title" content="<%= heading || pageTitle %>">
+<meta data-managed-meta property="og:description" content="<%= description %>">
+<meta data-managed-meta property="og:url" content="<%= canonical %>">
+<meta data-managed-meta property="og:site_name" content="<%= config.title %>">
+<meta data-managed-meta property="og:locale" content="<%= locale %>">
+<% if (ogImage) { %>
+<meta data-managed-meta property="og:image" content="<%= ogImage %>">
+<meta data-managed-meta property="og:image:alt" content="<%= heading || pageTitle %>">
+<% } %>
+<% if (isPost) { %>
+<meta data-managed-meta property="article:published_time" content="<%= isoDate %>">
+<meta data-managed-meta property="article:modified_time" content="<%= isoUpdated %>">
+<% catList.forEach(function (cat) { %><meta data-managed-meta property="article:section" content="<%= cat %>"><% }) %>
+<% tagList.forEach(function (tag) { %><meta data-managed-meta property="article:tag" content="<%= tag %>"><% }) %>
+<% } %>
+
+<meta data-managed-meta name="twitter:card" content="<%= ogImage ? 'summary_large_image' : 'summary' %>">
+<% if (seo.twitter) { %><meta data-managed-meta name="twitter:site" content="<%= seo.twitter %>"><% } %>
+<meta data-managed-meta name="twitter:title" content="<%= heading || pageTitle %>">
+<meta data-managed-meta name="twitter:description" content="<%= description %>">
+<% if (ogImage) { %><meta data-managed-meta name="twitter:image" content="<%= ogImage %>"><% } %>
+
+<meta name="theme-color" media="(prefers-color-scheme: light)" content="#f7f4ee">
+<meta name="theme-color" media="(prefers-color-scheme: dark)" content="#101114">
+
+<% if (theme.favicon) { %><link rel="icon" href="<%= url_for(theme.favicon) %>"><% } %>
+<% if (theme.appleTouchIcon) { %><link rel="apple-touch-icon" href="<%= url_for(theme.appleTouchIcon) %>"><% } %>
+<% if (theme.rss) { %><link rel="alternate" type="application/atom+xml" title="<%= config.title %>" href="<%= url_for(theme.rss) %>"><% } %>
+
+<script data-managed-meta type="application/ld+json"><%- JSON.stringify(graph).replace(/<\//g, '<\\/') %></script>
+
+<% if (theme.analytics && theme.analytics.google) { %>
+<script async src="https://www.googletagmanager.com/gtag/js?id=<%= theme.analytics.google %>"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', '<%= theme.analytics.google %>');
+</script>
+<% } %>
+<% if (theme.analytics && theme.analytics.umami && theme.analytics.umami.src && theme.analytics.umami.websiteId) { %>
+<script defer src="<%= theme.analytics.umami.src %>" data-website-id="<%= theme.analytics.umami.websiteId %>"></script>
+<% } %>

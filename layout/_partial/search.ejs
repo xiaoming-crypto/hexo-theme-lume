@@ -1,0 +1,45 @@
+<%
+  const hotTags = (site.tags && site.tags.length)
+    ? site.tags.sort('-length').limit(6).toArray()
+    : [];
+  const searchEnabled = !theme.search || theme.search.enable !== false;
+%>
+<% if (searchEnabled) { %>
+<dialog class="search-dialog" data-search-dialog
+        data-index="<%= url_for('/search.json') %>"
+        data-max-results="<%= (theme.search && theme.search.maxResults) || 12 %>"
+        aria-labelledby="search-dialog-title">
+  <div class="search-dialog__panel">
+    <h2 class="sr-only" id="search-dialog-title"><%= __('search.title') %></h2>
+
+    <form class="search-field" data-search-form role="search">
+      <svg class="search-field__icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+        <circle cx="11" cy="11" r="6.5"></circle>
+        <path d="m16 16 4.5 4.5"></path>
+      </svg>
+      <input type="search" name="q" data-search-input
+             placeholder="<%= __('search.placeholder') %>"
+             aria-controls="search-overlay-results"
+             aria-autocomplete="list" autocomplete="off" spellcheck="false">
+      <kbd class="search-field__kbd">ESC</kbd>
+    </form>
+
+    <div class="search-suggest" data-search-suggest-wrap>
+      <span class="search-suggest__label"><%= __('search.popular') %></span>
+      <div class="search-suggest__tags">
+        <% hotTags.forEach(function (tag) { %>
+          <button type="button" data-search-suggest="<%= tag.name %>"><%= tag.name %></button>
+        <% }) %>
+      </div>
+    </div>
+
+    <div class="search-results" id="search-overlay-results" data-search-results role="listbox" aria-label="<%= __('search.title') %>"></div>
+
+    <div class="search-dialog__foot">
+      <span><kbd>↑</kbd><kbd>↓</kbd> <%= __('search.hintUpDown') %></span>
+      <span><kbd>↵</kbd> <%= __('search.hintEnter') %></span>
+      <span class="search-dialog__count" data-search-count></span>
+    </div>
+  </div>
+</dialog>
+<% } %>

@@ -1,0 +1,47 @@
+<%
+  const groups = {};
+  page.posts.each(function (post) {
+    const year = date(post.date, 'YYYY');
+    if (!groups[year]) groups[year] = [];
+    groups[year].push(post);
+  });
+  const years = Object.keys(groups).sort(function (a, b) { return Number(b) - Number(a); });
+  let heading = __('archive.title');
+  if (page.year && page.month) {
+    heading = page.year + ' 年 ' + page.month + ' 月';
+  } else if (page.year) {
+    heading = page.year + ' 年';
+  }
+  const total = site.posts ? site.posts.length : 0;
+%>
+<section class="archive">
+  <header class="page-head">
+    <p class="eyebrow">Archive</p>
+    <h1><%= heading %></h1>
+    <p class="page-head__meta"><%= total %> 篇文章<%= page.total > 1 ? ' · 第 ' + page.current + ' / ' + page.total + ' 页' : '' %></p>
+  </header>
+
+  <div class="archive__list">
+    <% years.forEach(function (year, yearIndex) { %>
+      <section class="archive-year" data-reveal>
+        <h2 class="archive-year__num" aria-label="<%= year %>"><%= year %></h2>
+        <ul class="archive-year__posts">
+          <% groups[year].forEach(function (post, index) { %>
+            <li class="archive-item" data-reveal style="--i: <%= Math.min(index, 8) %>">
+              <a href="<%= url_for(post.path) %>">
+                <time datetime="<%= date_xml(post.date) %>"><%= date(post.date, 'MM-DD') %></time>
+                <span class="archive-item__title"><%= post.title %></span>
+                <% if (post.categories && post.categories.length) { %>
+                  <span class="archive-item__cat"><%= post.categories.first().name %></span>
+                <% } %>
+                <span class="archive-item__arrow" aria-hidden="true">↗</span>
+              </a>
+            </li>
+          <% }) %>
+        </ul>
+      </section>
+    <% }) %>
+  </div>
+
+  <%- partial('_partial/pagination') %>
+</section>

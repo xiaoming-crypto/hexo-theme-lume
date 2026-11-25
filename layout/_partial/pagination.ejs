@@ -1,0 +1,51 @@
+<%
+  const current = page.current || 1;
+  const total = page.total || 1;
+  const base = page.base || '';
+  const paginationDir = config.pagination_dir || 'page';
+  const pageUrl = function (number) {
+    if (number <= 1) return url_for(base || '/');
+    return url_for(base + paginationDir + '/' + number + '/');
+  };
+  const numbers = [];
+  for (let i = 1; i <= total; i += 1) {
+    if (i === 1 || i === total || Math.abs(i - current) <= 1) {
+      numbers.push(i);
+    } else if (numbers[numbers.length - 1] !== '…') {
+      numbers.push('…');
+    }
+  }
+%>
+<% if (total > 1) { %>
+<nav class="pager" aria-label="Pagination">
+  <% if (page.prev_link) { %>
+    <a class="pager__step" href="<%= url_for(page.prev_link) %>" rel="prev">
+      <span aria-hidden="true">←</span> 上一页
+    </a>
+  <% } else { %>
+    <span class="pager__step is-disabled" aria-hidden="true"><span>←</span> 上一页</span>
+  <% } %>
+
+  <span class="pager__pages">
+    <% numbers.forEach(function (number) { %>
+      <% if (number === '…') { %>
+        <span class="pager__gap" aria-hidden="true">…</span>
+      <% } else { %>
+        <a href="<%= pageUrl(number) %>"
+           class="<%= number === current ? 'is-current' : '' %>"
+           <% if (number === current) { %>aria-current="page"<% } %>>
+          <%= String(number).padStart(2, '0') %>
+        </a>
+      <% } %>
+    <% }) %>
+  </span>
+
+  <% if (page.next_link) { %>
+    <a class="pager__step" href="<%= url_for(page.next_link) %>" rel="next">
+      下一页 <span aria-hidden="true">→</span>
+    </a>
+  <% } else { %>
+    <span class="pager__step is-disabled" aria-hidden="true">下一页 <span>→</span></span>
+  <% } %>
+</nav>
+<% } %>

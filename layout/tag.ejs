@@ -1,0 +1,19 @@
+<%
+  const tagName = page.tag || '';
+  const count = page.posts ? page.posts.length : 0;
+%>
+<section class="term-page">
+  <header class="page-head">
+    <p class="eyebrow">Tag</p>
+    <h1><span class="tag-hash" aria-hidden="true">#</span><%= tagName %></h1>
+    <p class="page-head__meta"><%= count %> 篇文章<%= page.total > 1 ? ' · 第 ' + page.current + ' / ' + page.total + ' 页' : '' %></p>
+  </header>
+
+  <div class="entries">
+    <% page.posts.each(function (post, index) { %>
+      <%- partial('_partial/entry', { post: post, index: index }) %>
+    <% }) %>
+  </div>
+
+  <%- partial('_partial/pagination') %>
+</section>

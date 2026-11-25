@@ -1,0 +1,79 @@
+<%
+  const pageData = (typeof page !== 'undefined' && page) ? page : {};
+  const layoutName = pageData.layout || (pageData.archive ? 'archive' : (typeof pageData.category === 'string' ? 'category' : (typeof pageData.tag === 'string' ? 'tag' : (pageData.__index ? 'index' : 'page'))));
+  const motion = theme.motion || {};
+  const flag = value => (value === false ? 'false' : 'true');
+  const brandColor = theme.accent || '#f5822a';
+  const brandDark = theme.accentDark || brandColor;
+  const selection = (theme.color && theme.color.textSelection) || '#ffd166';
+%>
+<!DOCTYPE html>
+<html lang="<%= config.language || 'zh-CN' %>" class="no-js" data-theme="light"
+      data-scheme="<%= theme.scheme || 'auto' %>"
+      data-router="<%= flag(motion.pageTransitions) %>"
+      data-reveal-motion="<%= flag(motion.reveal) %>"
+      data-parallax="<%= flag(motion.heroParallax) %>"
+      data-peek="<%= flag(motion.peek) %>"
+      data-ripple="<%= flag(motion.themeRipple) %>"
+      data-confetti="<%= flag(motion.confetti) %>"
+      style="--brand: <%= brandColor %>; --brand-dark: <%= brandDark %>; --selection: <%= selection %>;"
+      data-label-empty="<%= __('search.empty') %>"
+      data-label-empty-hint="<%= __('search.emptyHint') %>"
+      data-label-found="<%= __('search.found') %>"
+      data-label-minutes="<%= __('post.minutes') %>"
+      data-label-copy="<%= __('action.copy') %>"
+      data-label-copied="<%= __('action.copied') %>"
+      data-label-copying="<%= __('action.copying') %>"
+      data-label-copy-failed="<%= __('action.copyFailed') %>">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <script>
+    (function () {
+      var root = document.documentElement;
+      root.classList.remove('no-js');
+      root.classList.add('js');
+      var forced = '<%= theme.scheme || "auto" %>';
+      var stored = null;
+      try { stored = localStorage.getItem('lume-theme'); } catch (error) {}
+      var prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+      var themeName = (forced === 'light' || forced === 'dark')
+        ? forced
+        : (stored || (prefersDark ? 'dark' : 'light'));
+      root.setAttribute('data-theme', themeName);
+      root.style.colorScheme = themeName;
+    })();
+  </script>
+  <%- partial('_partial/head', { pageData: pageData }) %>
+  <link rel="stylesheet" href="<%= url_for('/css/main.css') %>">
+  <link rel="stylesheet" href="<%= url_for('/css/pop.css') %>">
+  <script defer src="<%= url_for('/js/extras.js') %>"></script>
+  <script defer src="<%= url_for('/js/app.js') %>"></script>
+</head>
+<body class="layout-<%= layoutName %>">
+  <a class="skip-link" href="#main"><%= __('a11y.skip') %></a>
+
+  <%- partial('_partial/header', { pageData: pageData }) %>
+
+  <main id="main" tabindex="-1" data-path="<%= pageData.path || '' %>">
+    <div class="page">
+      <%- body %>
+    </div>
+  </main>
+
+  <%- partial('_partial/footer', { pageData: pageData }) %>
+
+  <%- partial('_partial/capsule', { pageData: pageData }) %>
+
+  <%- partial('_partial/search') %>
+
+  <div class="peek" data-peek aria-hidden="true"><img alt="" data-peek-img></div>
+
+  <button class="to-top" type="button" data-to-top aria-label="<%= __('a11y.toTop') %>">
+    <svg viewBox="0 0 44 44" aria-hidden="true" focusable="false">
+      <circle class="to-top__ring" cx="22" cy="22" r="19" data-to-top-ring></circle>
+      <path class="to-top__arrow" d="M22 29V16M16.5 21.5 22 16l5.5 5.5"></path>
+    </svg>
+  </button>
+</body>
+</html>

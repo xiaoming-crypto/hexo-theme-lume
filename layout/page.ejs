@@ -1,0 +1,85 @@
+<%
+  const pageType = page.type || '';
+  const allCategories = site.categories ? site.categories.sort('name').toArray() : [];
+  const allTags = site.tags ? site.tags.sort('name').toArray() : [];
+  const maxTagCount = allTags.reduce(function (max, tag) { return Math.max(max, tag.length); }, 1);
+%>
+<% if (pageType === 'about') { %>
+  <%- partial('_partial/about') %>
+<% } else if (pageType === 'music') { %>
+  <%- partial('_partial/music') %>
+<% } else if (pageType === 'link' || pageType === 'friends') { %>
+  <%- partial('_partial/links') %>
+<% } else if (pageType === 'categories') { %>
+<section class="terms">
+  <header class="page-head">
+    <p class="eyebrow">Index · Categories</p>
+    <h1><%= page.title || __('categories.title') %></h1>
+    <p class="page-head__meta"><%= allCategories.length %> 个分类 · <%= site.posts.length %> 篇文章</p>
+  </header>
+
+  <% if (page.content && page.content.trim()) { %>
+    <div class="page-lead" data-reveal><%- page.content %></div>
+  <% } %>
+
+  <ul class="term-list">
+    <% allCategories.forEach(function (category, index) { %>
+      <li class="term" data-reveal style="--i: <%= Math.min(index, 8) %>">
+        <a href="<%= url_for(category.path) %>">
+          <span class="term__index" aria-hidden="true"><%= String(index + 1).padStart(2, '0') %></span>
+          <span class="term__name"><%= category.name %></span>
+          <span class="term__count"><%= category.length %><span aria-hidden="true"> 篇</span></span>
+          <span class="term__arrow" aria-hidden="true">↗</span>
+        </a>
+      </li>
+    <% }) %>
+  </ul>
+</section>
+<% } else if (pageType === 'tags') { %>
+<section class="terms terms--tags">
+  <header class="page-head">
+    <p class="eyebrow">Index · Tags</p>
+    <h1><%= page.title || __('tags.title') %></h1>
+    <p class="page-head__meta"><%= allTags.length %> 个标签</p>
+  </header>
+
+  <% if (page.content && page.content.trim()) { %>
+    <div class="page-lead" data-reveal><%- page.content %></div>
+  <% } %>
+
+  <div class="tag-cloud">
+    <% allTags.forEach(function (tag, index) { %>
+      <a class="tag-cloud__item" href="<%= url_for(tag.path) %>"
+         style="--w: <%= ((tag.length / maxTagCount) * 100).toFixed(0) %>; --i: <%= Math.min(index, 10) %>"
+         data-reveal>
+        <span><%= tag.name %></span>
+        <sup><%= tag.length %></sup>
+      </a>
+    <% }) %>
+  </div>
+</section>
+<% } else { %>
+<article class="page<%= page.cover ? ' page--cover' : '' %>">
+  <header class="page-head">
+    <% if (page.categories && page.categories.length) { %>
+      <p class="eyebrow"><%= page.categories.first().name %></p>
+    <% } else { %>
+      <p class="eyebrow">Page</p>
+    <% } %>
+    <h1><%= page.title %></h1>
+    <% if (page.description) { %><p class="page-head__meta"><%= page.description %></p><% } %>
+  </header>
+
+  <% if (page.cover) { %>
+    <figure class="post-cover" data-post-cover>
+      <div class="post-cover__frame">
+        <img src="<%= page.cover %>" alt="<%= page.title %>" loading="eager" decoding="async">
+      </div>
+    </figure>
+  <% } %>
+
+  <div class="post-body page-body" data-article>
+    <%- page.content %>
+  </div>
+</article>
+<% } %>

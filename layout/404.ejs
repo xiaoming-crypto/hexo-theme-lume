@@ -1,0 +1,25 @@
+<section class="not-found">
+  <p class="not-found__eyebrow" data-reveal>Oops · Error 404</p>
+
+  <div class="not-found__stage" data-reveal style="--i: 1">
+    <span class="not-found__doodle not-found__doodle--one" aria-hidden="true">✦</span>
+    <span class="not-found__doodle not-found__doodle--two" aria-hidden="true">?</span>
+    <span class="not-found__doodle not-found__doodle--three" aria-hidden="true">☁</span>
+    <div class="not-found__code" aria-hidden="true">
+      <span>4</span><span class="not-found__zero">0</span><span>4</span>
+    </div>
+    <div class="not-found__mascot" aria-hidden="true">
+      <span class="not-found__face">☹</span>
+      <span class="not-found__tear"></span>
+    </div>
+  </div>
+
+  <h1 class="not-found__title" data-reveal style="--i: 2"><%= __('error.title') %></h1>
+  <p class="not-found__intro" data-reveal style="--i: 3"><%= __('error.intro') %></p>
+
+  <div class="not-found__actions" data-reveal style="--i: 4">
+    <a class="btn btn--pop" href="<%= url_for('/') %>"><%= __('error.home') %></a>
+    <button class="btn btn--ghost" type="button" data-search-open><%= __('error.search') %></button>
+    <a class="btn btn--ghost" href="<%= url_for('/archives/') %>"><%= __('error.archive') %></a>
+  </div>
+</section>

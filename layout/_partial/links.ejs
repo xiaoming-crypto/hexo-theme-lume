@@ -1,0 +1,96 @@
+<%
+  const friendsConf = theme.friends || {};
+  const groups = (site.data.link || []);
+  const tips = friendsConf.tips || [];
+  const pageTitle = page.title || __('friends.title');
+  const pageIntro = page.description || __('friends.intro');
+%>
+<section class="friends-page">
+  <header class="friends-hero" data-reveal>
+    <div class="friends-hero__copy">
+      <p class="eyebrow"><span aria-hidden="true">🌻</span> <%= __('friends.title') %></p>
+      <h1><%= pageTitle %></h1>
+      <p><%= pageIntro %></p>
+    </div>
+    <div class="friends-hero__doodle" aria-hidden="true">
+      <span>🫧</span><span>🔗</span><span>✦</span>
+    </div>
+  </header>
+
+  <% if (friendsConf.fishing !== false) { %>
+  <section class="fishing" data-fishing
+           data-api="<%= friendsConf.api || '' %>"
+           data-tips="<%= tips.join('|') %>"
+           data-label-cast="<%= __('friends.cast') %>"
+           data-label-casting="<%= __('friends.casting') %>"
+           data-label-got="<%= __('friends.got') %>"
+           data-label-empty="<%= __('friends.empty') %>"
+           data-reveal>
+    <div class="fishing__scene" aria-hidden="true">
+      <span class="fishing__sun"></span>
+      <span class="fishing__cloud"></span>
+      <span class="fishing__water"></span>
+      <span class="fishing__fish">🐟</span>
+      <span class="fishing__rod"></span>
+    </div>
+    <div class="fishing__body">
+      <h2>🎣 <%= __('friends.fishing') %></h2>
+      <p>在友链的鱼塘里，随机捞一篇好文章。</p>
+      <button class="btn btn--pop" type="button" data-fishing-cast><%= __('friends.cast') %></button>
+      <div class="fishing__result" data-fishing-result aria-live="polite"></div>
+    </div>
+  </section>
+  <% } %>
+
+  <div class="friend-groups">
+    <% groups.forEach(function (group, gi) { %>
+      <section class="friend-group" data-reveal style="--i: <%= Math.min(gi, 4) %>">
+        <header class="friend-group__head">
+          <h2><span aria-hidden="true">◍</span> <%= group.class_name || __('friends.title') %></h2>
+          <span><%= (group.link_list || []).length %> 位</span>
+          <% if (group.class_desc) { %><p><%= group.class_desc %></p><% } %>
+        </header>
+        <div class="friend-grid friend-grid--<%= group.flink_style || 'flexcard' %>">
+          <% (group.link_list || []).forEach(function (item) { %>
+            <a class="friend-card<%= item.lost_contact ? ' is-lost' : '' %>" href="<%= item.link %>" target="_blank" rel="noopener noreferrer"
+               data-reveal
+               <% if (item.siteshot) { %>data-siteshot="<%= item.siteshot %>"<% } %>>
+              <span class="friend-card__avatar">
+                <% if (item.avatar) { %><img src="<%= item.avatar %>" alt="" loading="lazy" decoding="async"><% } else { %><i><%= (item.name || '?').charAt(0) %></i><% } %>
+              </span>
+              <span class="friend-card__body">
+                <strong><%= item.name %><% if (item.recommend) { %><em class="friend-card__star" title="推荐" aria-label="推荐">★</em><% } %></strong>
+                <small><%= item.descr || '' %></small>
+                <% if (item.tag) { %><span class="pill pill--sm"><%= item.tag %></span><% } %>
+              </span>
+              <span class="friend-card__shot" aria-hidden="true"></span>
+            </a>
+          <% }); %>
+        </div>
+      </section>
+    <% }); %>
+  </div>
+
+  <section class="friends-feed" data-friends-feed
+           data-api="<%= friendsConf.api || '' %>"
+           data-page-size="<%= friendsConf.pageSize || 12 %>"
+           data-label-loading="<%= __('friends.loading') %>"
+           data-label-empty="<%= __('friends.empty') %>"
+           data-label-refresh="<%= __('friends.refresh') %>"
+           data-reveal>
+    <header class="section-head">
+      <h2><span class="section-head__emoji" aria-hidden="true">🛰️</span><%= __('friends.feed') %></h2>
+      <button class="btn btn--ghost btn--sm" type="button" data-friends-refresh><%= __('friends.refresh') %></button>
+      <span class="section-head__rule" aria-hidden="true"></span>
+    </header>
+    <div class="friends-feed__list" data-friends-list>
+      <p class="friends-feed__status" data-friends-status><%= __('friends.loading') %></p>
+    </div>
+  </section>
+
+  <% if (page.content) { %>
+    <div class="post-body friends-extra" data-reveal><%- page.content %></div>
+  <% } %>
+
+  <%- partial('_partial/comments') %>
+</section>

@@ -1,0 +1,94 @@
+<%
+  const nav = (theme.menu && theme.menu.length) ? theme.menu : [
+    { label: '首页', path: '/' },
+    { label: '文章', path: '/archives/' },
+    { label: '友链', path: '/link/' },
+    { label: '音乐', path: '/music/' },
+    { label: '关于', path: '/about/' }
+  ];
+  const brand = theme.brand || {};
+  const logo = brand.logo || '';
+  const logoSrc = logo ? (logo.indexOf('http') === 0 ? logo : url_for(logo)) : '';
+  const mark = brand.mark || (config.author ? String(config.author).slice(0, 1) : (config.title || 'L').slice(0, 1));
+  const travelling = theme.travelling || {};
+  const randomPost = theme.randomPost || {};
+%>
+<header class="site-header" data-header>
+  <div class="header__inner">
+    <a class="brand" href="<%= url_for('/') %>" aria-label="<%= config.title %>">
+      <% if (logoSrc) { %>
+        <span class="brand__badge">
+          <img src="<%= logoSrc %>" alt="" width="40" height="40" data-brand-logo>
+          <span class="brand__spark" aria-hidden="true"></span>
+        </span>
+      <% } else { %>
+        <span class="brand__mark"><%= mark %></span>
+      <% } %>
+      <% if (brand.showTitle !== false) { %>
+        <span class="brand__text">
+          <strong><%= config.title %></strong>
+          <small><%= config.subtitle || (theme.hero && theme.hero.eyebrow) || '' %></small>
+        </span>
+      <% } %>
+    </a>
+
+    <nav class="site-nav" aria-label="<%= __('a11y.nav') %>">
+      <% nav.forEach(function (item) { %>
+        <% var external = /^(https?:)?\/\//i.test(item.path) || item.path.indexOf('mailto:') === 0; %>
+        <% if (external) { %>
+          <a class="nav-link nav-link--external" href="<%= item.path %>" data-nav-path="<%= item.path %>" target="_blank" rel="noopener noreferrer"><%= item.label %><span class="nav-link__out" aria-hidden="true">↗</span></a>
+        <% } else { %>
+          <a class="nav-link" href="<%= url_for(item.path) %>" data-nav-path="<%= item.path %>"><%= item.label %></a>
+        <% } %>
+      <% }); %>
+    </nav>
+
+    <div class="header__tools">
+      <% if (travelling.enable) { %>
+        <a class="tool tool--travelling" href="<%= travelling.url || 'https://www.travellings.cn/go.html' %>" target="_blank" rel="noopener noreferrer" title="开往" aria-label="开往">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 15V7a4 4 0 0 1 4-4h4a4 4 0 0 1 4 4v8"/><path d="M6 11h12"/><path d="m8 19-2 2M16 19l2 2"/><circle cx="9" cy="15" r="1"/><circle cx="15" cy="15" r="1"/></svg>
+        </a>
+      <% } %>
+      <% if (randomPost.enable) { %>
+        <button class="tool tool--random" type="button" data-random-post title="随便逛逛" aria-label="随便逛逛">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="4" width="16" height="16" rx="4"/><circle cx="9" cy="9" r="1"/><circle cx="15" cy="9" r="1"/><circle cx="9" cy="15" r="1"/><circle cx="15" cy="15" r="1"/><circle cx="12" cy="12" r="1"/></svg>
+        </button>
+      <% } %>
+      <button class="tool" type="button" data-search-open title="<%= __('a11y.search') %>" aria-label="<%= __('a11y.search') %>">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="6.5"/><path d="m16 16 4 4"/></svg>
+      </button>
+      <button class="tool tool--theme" type="button" data-theme-toggle aria-label="<%= __('a11y.theme') %>" aria-pressed="false">
+        <svg class="icon-sun" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="4.2"/><path d="M12 2.5v2.2M12 19.3v2.2M2.5 12h2.2M19.3 12h2.2M5.2 5.2l1.6 1.6M17.2 17.2l1.6 1.6M18.8 5.2l-1.6 1.6M6.8 17.2l-1.6 1.6"/></svg>
+        <svg class="icon-moon" viewBox="0 0 24 24" aria-hidden="true"><path d="M20 14.5A8.5 8.5 0 0 1 9.5 4a8.5 8.5 0 1 0 10.5 10.5Z"/><path d="M17 5.5h.01M19 8h.01"/></svg>
+      </button>
+      <button class="tool tool--menu" type="button" data-menu-toggle aria-label="<%= __('a11y.menu') %>" aria-expanded="false" aria-controls="mobile-nav">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+  </div>
+</header>
+
+<div class="nav-scrim" data-nav-scrim hidden></div>
+
+<aside class="mobile-nav" id="mobile-nav" data-mobile-nav aria-hidden="true" inert>
+  <div class="mobile-nav__head">
+    <div>
+      <strong><%= config.title %></strong>
+      <small><%= config.subtitle || '' %></small>
+    </div>
+    <span class="mobile-nav__wave" aria-hidden="true">✦</span>
+  </div>
+  <nav class="mobile-nav__list" aria-label="<%= __('a11y.nav') %>">
+    <% nav.forEach(function (item, i) { %>
+      <% var external = /^(https?:)?\/\//i.test(item.path) || item.path.indexOf('mailto:') === 0; %>
+      <a class="nav-link<%= external ? ' nav-link--external' : '' %>" href="<%= external ? item.path : url_for(item.path) %>" data-nav-path="<%= item.path %>" style="--i: <%= i %>"<% if (external) { %> target="_blank" rel="noopener noreferrer"<% } %>>
+        <span class="mobile-nav__dot"></span><%= item.label %><% if (external) { %><span class="nav-link__out" aria-hidden="true">↗</span><% } %>
+      </a>
+    <% }); %>
+  </nav>
+  <div class="mobile-nav__foot">
+    <% if (travelling.enable) { %><a href="<%= travelling.url || 'https://www.travellings.cn/go.html' %>" target="_blank" rel="noopener noreferrer">🚂 开往</a><% } %>
+    <% if (randomPost.enable) { %><button type="button" data-random-post>🎲 随便逛逛</button><% } %>
+    <button type="button" data-search-open>🔍 搜索</button>
+  </div>
+</aside>

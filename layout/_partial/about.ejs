@@ -1,0 +1,96 @@
+<%
+  const configAbout = theme.about || {};
+  const avatar = page.avatar || configAbout.avatar;
+  const name = page.name || configAbout.name || config.author || config.title;
+  const role = page.role || configAbout.role;
+  const bio = page.bio || configAbout.bio || config.description;
+  const facts = Array.isArray(page.facts) ? page.facts : (Array.isArray(configAbout.facts) ? configAbout.facts : []);
+  const skills = Array.isArray(page.skills) ? page.skills : (Array.isArray(configAbout.skills) ? configAbout.skills : []);
+  const social = Array.isArray(theme.social) ? theme.social : [];
+  const roleItems = role ? String(role).split(/[·•,，/|]/).map(function (item) { return item.trim(); }).filter(Boolean) : [];
+  const hasAside = skills.length || social.length;
+  const hasContent = page.content && page.content.trim();
+  const rotations = ['-1.6deg', '1.2deg', '-0.8deg'];
+%>
+<section class="about">
+  <header class="about__hero" data-reveal>
+    <span class="about__tape" aria-hidden="true"></span>
+    <span class="about__doodle about__doodle--star" aria-hidden="true">✦</span>
+    <span class="about__doodle about__doodle--coffee" aria-hidden="true">✿</span>
+    <span class="about__doodle about__doodle--headphone" aria-hidden="true">♪</span>
+
+    <div class="about__avatar" data-reveal>
+      <% if (avatar) { %>
+        <img src="<%= avatar %>" alt="<%= name %>" width="176" height="176" loading="eager" decoding="async">
+      <% } else { %>
+        <span aria-hidden="true"><%= String(name).charAt(0) %></span>
+      <% } %>
+      <span class="about__avatar-ring" aria-hidden="true"></span>
+      <span class="about__avatar-badge" aria-hidden="true">✦</span>
+    </div>
+
+    <div class="about__intro">
+      <p class="eyebrow" data-reveal><%= __('about.eyebrow') %></p>
+      <h1 class="about__name" data-reveal style="--i: 1"><%= name %></h1>
+      <% if (roleItems.length) { %>
+      <p class="about__role" data-reveal style="--i: 2">
+        <% roleItems.forEach(function (item) { %><span><%= item %></span><% }) %>
+      </p>
+      <% } %>
+      <% if (bio) { %><p class="about__bio" data-reveal style="--i: 3"><%= bio %></p><% } %>
+      <p class="about__status" data-reveal style="--i: 4"><span class="about__status-dot" aria-hidden="true"></span>正在慢慢更新这本数字手账</p>
+    </div>
+  </header>
+
+  <% if (facts.length) { %>
+  <div class="about__facts" data-reveal>
+    <p class="about__scrap-label" aria-hidden="true">📌 Quick Facts</p>
+    <ul class="about__fact-list">
+      <% facts.forEach(function (fact, index) { %>
+        <li class="about__fact" style="--rot: <%= rotations[index % rotations.length] %>; --i: <%= index %>">
+          <span><%= fact.label %></span>
+          <strong><%= fact.value %></strong>
+        </li>
+      <% }) %>
+    </ul>
+  </div>
+  <% } %>
+
+  <% if (hasContent || hasAside) { %>
+  <div class="about__grid<%= hasAside ? '' : ' about__grid--single' %>">
+    <div class="about__main">
+      <% if (hasContent) { %>
+        <div class="about__paper" data-reveal>
+          <span class="about__paper-tape" aria-hidden="true"></span>
+          <p class="about__paper-label" aria-hidden="true">☞ 关于我</p>
+          <div class="post-body about__body"><%- page.content %></div>
+        </div>
+      <% } %>
+    </div>
+
+    <% if (hasAside) { %>
+    <aside class="about__aside">
+      <% if (skills.length) { %>
+      <div class="about__block" data-reveal>
+        <p class="about__block-label">🧩 Skills</p>
+        <ul class="skills">
+          <% skills.forEach(function (skill) { %><li><%= skill %></li><% }) %>
+        </ul>
+      </div>
+      <% } %>
+
+      <% if (social.length) { %>
+      <div class="about__block" data-reveal style="--i: 1">
+        <p class="about__block-label">🌍 Elsewhere</p>
+        <ul class="about__social">
+          <% social.forEach(function (item) { %>
+            <li><a href="<%= url_for(item.url) %>" rel="noopener" target="_blank"><%= item.name %><span aria-hidden="true">↗</span></a></li>
+          <% }) %>
+        </ul>
+      </div>
+      <% } %>
+    </aside>
+    <% } %>
+  </div>
+  <% } %>
+</section>

@@ -1,0 +1,192 @@
+<%
+  const post = page;
+  const postOptions = theme.post || {};
+  const categories = (post.categories && post.categories.toArray) ? post.categories.toArray() : [];
+  const tags = (post.tags && post.tags.toArray) ? post.tags.toArray() : [];
+  const tocHTML = postOptions.showToc === false ? '' : toc(post.content, { list_number: false, max_depth: 3 });
+  const minutes = lume_reading_time(post.content);
+  const words = lume_word_count(post.content);
+  const showCover = postOptions.showCover !== false && !!post.cover;
+  const updated = post.updated && post.date && (post.updated.valueOf() - post.date.valueOf() > 60000);
+  const comments = theme.comments || {};
+  const provider = comments.provider || 'giscus';
+  const giscus = comments.giscus || {};
+  const twikoo = comments.twikoo || {};
+  const hasComments = !!comments.enable && ((provider === 'giscus' && giscus.repo) || (provider === 'twikoo' && twikoo.envId));
+  const colorConf = (theme.color && theme.color.mainTone) || {};
+%>
+<article class="post"
+         <% if (post.cover) { %>data-color-img="<%= post.cover %>"<% } %>
+         <% if (post.main_color) { %>data-main-color="<%= post.main_color %>"<% } %>
+         data-color-api="<%= colorConf.api || '' %>"
+         data-cover-change="<%= colorConf.coverChange === false ? 'false' : 'true' %>"
+         data-color-enabled="<%= colorConf.enable === false ? 'false' : 'true' %>">
+  <header class="post-head">
+    <nav class="post-crumb" aria-label="Breadcrumb" data-reveal>
+      <a href="<%= url_for('/') %>"><%= __('nav.home') %></a>
+      <span aria-hidden="true">/</span>
+      <% if (categories.length) { %>
+        <a href="<%= url_for(categories[0].path) %>"><%= categories[0].name %></a>
+        <span aria-hidden="true">/</span>
+      <% } %>
+      <span class="post-crumb__current"><%= post.title %></span>
+    </nav>
+
+    <% if (categories.length) { %>
+    <p class="post-kicker" data-reveal style="--i: 1">
+      <span aria-hidden="true">✦</span>
+      <% categories.forEach(function (category, index) { %>
+        <a href="<%= url_for(category.path) %>"><%= category.name %></a><% if (index < categories.length - 1) { %><span aria-hidden="true">,</span><% } %>
+      <% }) %>
+    </p>
+    <% } %>
+
+    <h1 class="post-title" data-reveal style="--i: 1"><%= post.title %></h1>
+
+    <% if (post.description) { %>
+      <p class="post-dek" data-reveal style="--i: 2"><%= post.description %></p>
+    <% } %>
+
+    <div class="post-meta" data-reveal style="--i: 3">
+      <span class="post-meta__item">
+        <span aria-hidden="true">🗓</span>
+        <time datetime="<%= date_xml(post.date) %>"><%= date(post.date, 'YYYY-MM-DD') %></time>
+      </span>
+      <% if (updated && postOptions.showUpdated !== false) { %>
+        <span class="post-meta__item"><%= __('post.updated') %> <time datetime="<%= date_xml(post.updated) %>"><%= date(post.updated, 'YYYY-MM-DD') %></time></span>
+      <% } %>
+      <% if (postOptions.showReadingTime !== false) { %>
+        <span class="post-meta__item"><span aria-hidden="true">☕</span><%= minutes %> <%= __('post.minutes') %></span>
+      <% } %>
+      <% if (postOptions.showWordCount !== false) { %>
+        <span class="post-meta__item"><%= words %> <%= __('post.words') %></span>
+      <% } %>
+      <% if (hasComments && twikoo.count !== false) { %>
+        <span class="post-meta__item" data-comment-count-wrap hidden><span aria-hidden="true">💬</span><span data-comment-count>0</span></span>
+      <% } %>
+    </div>
+  </header>
+
+  <% if (showCover) { %>
+  <figure class="post-cover" data-post-cover>
+    <div class="post-cover__frame">
+      <img src="<%= post.cover %>" alt="<%= post.title %>" loading="eager" decoding="async" fetchpriority="high">
+    </div>
+    <% if (post.coverCaption) { %><figcaption><%= post.coverCaption %></figcaption><% } %>
+  </figure>
+  <% } %>
+
+  <div class="post-layout">
+    <div class="post-main">
+      <% if (tocHTML) { %>
+      <details class="toc-mobile" data-toc>
+        <summary><%= __('post.toc') %><span class="toc-mobile__count"><%= tocHTML.split('<li').length - 1 %></span></summary>
+        <div class="toc-mobile__body"><%- tocHTML %></div>
+      </details>
+      <% } %>
+
+      <div class="post-body" data-article>
+        <%- post.content %>
+      </div>
+
+      <footer class="post-end">
+        <% if (tags.length) { %>
+        <ul class="post-tags" aria-label="Tags" data-reveal>
+          <% tags.forEach(function (tag) { %>
+            <li><a href="<%= url_for(tag.path) %>"><span aria-hidden="true">#</span><%= tag.name %></a></li>
+          <% }) %>
+        </ul>
+        <% } %>
+
+        <% if (postOptions.license) { %>
+        <aside class="license" data-reveal>
+          <p class="license__label"><%= __('post.license') %></p>
+          <p><%= postOptions.license %></p>
+        </aside>
+        <% } %>
+      </footer>
+
+      <%
+        const rewardConf = theme.reward || {};
+        const rewardMethods = rewardConf.methods || {};
+        const rewardKeys = Object.keys(rewardMethods).filter(function (key) {
+          return rewardMethods[key] && (rewardMethods[key].label || rewardMethods[key].image);
+        });
+      %>
+      <% if (rewardConf.enable && rewardKeys.length) { %>
+      <section class="reward" data-reward>
+        <span class="reward__sticker" aria-hidden="true">♥</span>
+        <div class="reward__copy">
+          <h2><%= rewardConf.title || '请我喝杯咖啡' %></h2>
+          <p><%= rewardConf.intro || '如果这篇内容帮到了你，可以请我喝杯咖啡。' %></p>
+        </div>
+        <button class="btn btn--pop reward__open" type="button" data-reward-open aria-haspopup="dialog">
+          打赏一下 <span aria-hidden="true">♥</span>
+        </button>
+      </section>
+
+      <div class="reward-modal" data-reward-modal hidden>
+        <div class="reward-modal__scrim" data-reward-close></div>
+        <div class="reward-modal__card" role="dialog" aria-modal="true" aria-labelledby="reward-title">
+          <button class="reward-modal__close" type="button" data-reward-close aria-label="关闭打赏弹层">×</button>
+          <p class="reward-modal__kicker" aria-hidden="true">☕ Support</p>
+          <h2 id="reward-title"><%= rewardConf.title || '请我喝杯咖啡' %></h2>
+          <p class="reward-modal__intro"><%= rewardConf.intro || '' %></p>
+
+          <div class="reward-methods" role="tablist" aria-label="支付方式">
+            <% rewardKeys.forEach(function (key, index) { %>
+            <button class="reward-method<%= index === 0 ? ' is-active' : '' %>" type="button" role="tab"
+                    aria-selected="<%= index === 0 ? 'true' : 'false' %>"
+                    aria-controls="reward-panel-<%= key %>" data-reward-method="<%= key %>">
+              <span class="reward-method__dot" aria-hidden="true"></span><%= rewardMethods[key].label || key %>
+            </button>
+            <% }); %>
+          </div>
+
+          <div class="reward-panels">
+            <% rewardKeys.forEach(function (key, index) { %>
+            <figure class="reward-panel<%= index === 0 ? ' is-active' : '' %>" id="reward-panel-<%= key %>" role="tabpanel" data-reward-panel="<%= key %>"<%= index === 0 ? '' : ' hidden' %>>
+              <% if (rewardMethods[key].image) { %>
+                <img class="reward-panel__qr" src="<%= url_for(rewardMethods[key].image) %>" alt="<%= (rewardMethods[key].label || key) %>收款码" loading="lazy" decoding="async">
+              <% } %>
+              <figcaption><%= rewardMethods[key].label || key %>收款码</figcaption>
+            </figure>
+            <% }); %>
+          </div>
+
+          <p class="reward-modal__note"><span aria-hidden="true">🔒</span><%= rewardConf.note || '扫码仅用于展示收款码，本站不会发起扣款，也不会收集任何支付信息。' %></p>
+        </div>
+      </div>
+      <% } %>
+
+      <% if (postOptions.prevNext !== false && (post.prev || post.next)) { %>
+      <nav class="post-nav" aria-label="Post navigation">
+        <% if (post.prev) { %>
+        <a class="post-nav__item post-nav__item--prev" href="<%= url_for(post.prev.path) %>">
+          <span class="post-nav__label"><span aria-hidden="true">←</span> <%= __('post.prev') %></span>
+          <span class="post-nav__title"><%= post.prev.title %></span>
+        </a>
+        <% } else { %><span class="post-nav__item is-empty" aria-hidden="true"></span><% } %>
+
+        <% if (post.next) { %>
+        <a class="post-nav__item post-nav__item--next" href="<%= url_for(post.next.path) %>">
+          <span class="post-nav__label"><%= __('post.next') %> <span aria-hidden="true">→</span></span>
+          <span class="post-nav__title"><%= post.next.title %></span>
+        </a>
+        <% } else { %><span class="post-nav__item is-empty" aria-hidden="true"></span><% } %>
+      </nav>
+      <% } %>
+
+      <%- partial('_partial/comments') %>
+    </div>
+
+    <% if (tocHTML) { %>
+    <aside class="post-aside">
+      <div class="post-aside__inner" data-toc>
+        <p class="post-aside__label"><%= __('post.toc') %></p>
+        <%- tocHTML %>
+      </div>
+    </aside>
+    <% } %>
+  </div>
+</article>

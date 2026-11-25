@@ -1,0 +1,104 @@
+nav:
+  search: Search
+  menu: Menu
+  close: Close
+  home: Home
+  theme: Toggle theme
+
+a11y:
+  skip: Skip to content
+  toTop: Back to top
+  theme: Toggle color theme
+  search: Open search
+  menu: Open menu
+  nav: Site navigation
+  music: Music player
+  random: Surprise me
+  travelling: Travelling
+
+action:
+  copy: Copy
+  copied: Copied
+  copying: Copying…
+  copyFailed: Failed
+
+post:
+  minutes: min read
+  words: words
+  updated: Updated
+  toc: Contents
+  prev: Previous
+  next: Next
+  license: License
+  comments: Comments
+  commentsLoading: Loading comments…
+
+search:
+  title: Search
+  intro: Search every post on this site.
+  placeholder: Search posts, tags, or keywords…
+  submit: Search
+  empty: Nothing found
+  emptyHint: Try another keyword, or browse the archive.
+  found: posts match
+  popular: Popular tags
+  loading: Loading index…
+  hintUpDown: Select
+  hintEnter: Open
+  hintClose: Close
+  shortcut: Quick search
+
+archive:
+  title: Archive
+  all: All posts
+  count: Total
+
+categories:
+  title: Categories
+  intro: Browse all posts by topic.
+
+tags:
+  title: Tags
+  intro: Start with a word.
+
+about:
+  eyebrow: About
+
+music:
+  title: Music
+  intro: Press play and stay a while.
+  now: Now playing
+  play: Play
+  pause: Pause
+  prev: Previous
+  next: Next
+  volume: Volume
+  loading: Loading playlist…
+  error: Playlist is unavailable right now.
+  retry: Reload
+  playlist: Full playlist
+  capsule: Play something
+
+friends:
+  title: Friends
+  intro: Neighbours on the internet, all interesting people.
+  fishing: Go fishing
+  cast: Cast
+  casting: Casting…
+  got: You caught
+  empty: The pond is quiet today
+  feed: Friend feed
+  refresh: Shuffle
+  count: friends
+  visit: Visit
+  loading: Fishing for new posts…
+
+error:
+  title: Page not found
+  intro: The page may have moved, been removed, or never existed.
+  home: Back home
+  search: Search
+  archive: Browse archive
+
+footer:
+  toTop: Back to top
