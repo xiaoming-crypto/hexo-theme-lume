@@ -1185,7 +1185,12 @@ html[data-theme="dark"] .mascot__halo {
 .feed {
   max-width: 1180px;
   margin: 0 auto;
-  padding: clamp(36px, 5vw, 64px) 24px 10px;
+  padding: clamp(24px, 3vw, 36px) 24px 10px;
+}
+
+/* 「开始阅读」/ 滚轮吸附都落到这里，落点只留正常区块间距，不再空一屏。 */
+#latest {
+  scroll-margin-top: 20px;
 }
 
 .entries {
@@ -1535,10 +1540,10 @@ html[data-theme="dark"] .pager__pages .is-current {
 
 .post-cover__frame img {
   width: 100%;
-  height: auto;
+  height: 100%;
   display: block;
-  max-height: 520px;
   object-fit: cover;
+  object-position: 50% 50%;
 }
 
 .post-layout {
@@ -1608,19 +1613,21 @@ html[data-theme="dark"] .pager__pages .is-current {
 .post-body h2 {
   font-size: clamp(23px, 3vw, 30px);
   padding: 0;
-  text-align: center;
+  text-align: left;
 }
 
-/* 装饰条走正常文档流，用自动外边距横向居中，放在标题正上方。 */
+/* 竖向提示条放在标题文字前面，与首行文字同一水平线：底端贴基线，
+   多行标题也始终跟第一行对齐。 */
 .post-body h2::before {
   content: "";
   position: static;
-  display: block;
-  width: 36px;
-  height: 3px;
-  margin: 0 auto 14px;
+  display: inline-block;
+  width: 6px;
+  height: 0.84em;
+  margin: 0 12px 0 0;
   border-radius: 99px;
   background: var(--accent);
+  vertical-align: 0.02em;
 }
 
 .post-body h2 .headerlink,
@@ -2023,6 +2030,34 @@ html[data-theme="dark"] .code-block__bar {
   background: none;
   padding: 0;
   color: inherit;
+}
+
+/* Hexo 用 table 包代码，长命令行会把表格顶出容器、被 overflow 裁掉。
+   改成块级铺满，让 pre 自己横向滚动。 */
+.code-block > figure.highlight {
+  margin: 0;
+  border: 0;
+  border-radius: 0;
+  box-shadow: none;
+  overflow: visible;
+}
+
+.code-block figure.highlight table,
+.code-block figure.highlight tbody,
+.code-block figure.highlight tr,
+.code-block figure.highlight td {
+  display: block;
+  width: 100%;
+  max-width: 100%;
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+
+.code-block figure.highlight pre {
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
 }
 
 .post-body code:not(pre code) {

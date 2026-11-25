@@ -694,7 +694,10 @@
       }
     }
 
-    var offset = 104;
+    // 落点偏移交给 CSS 的 scroll-margin-top 决定（如首页 #latest 只留区块间距），
+    // 没写的目标仍沿用 104px 的老偏移，避免标题被吸顶胶囊压住。
+    var offset = parseInt(window.getComputedStyle(target).scrollMarginTop, 10);
+    if (!offset || isNaN(offset)) offset = 104;
     var top = target.getBoundingClientRect().top + window.pageYOffset - offset;
     window.scrollTo({ top: Math.max(0, top), behavior: reduceMotion ? 'auto' : 'smooth' });
     tocActivate(target);
@@ -1538,7 +1541,8 @@
         if (hero.offsetHeight > window.innerHeight + 8) return;
 
         var y = window.pageYOffset;
-        var feedTop = feed.getBoundingClientRect().top + y - 96;
+        var snapOffset = parseInt(window.getComputedStyle(feed).scrollMarginTop, 10) || 96;
+        var feedTop = feed.getBoundingClientRect().top + y - snapOffset;
         var target = Math.max(0, feedTop);
 
         if (y <= 4 && event.deltaY > 6) {
