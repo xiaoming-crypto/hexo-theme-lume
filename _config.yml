@@ -227,12 +227,19 @@ analytics:
     src: ""
     websiteId: ""
 
+# 自定义右键菜单（默认关闭；开启后桌面端按住 Shift + 右键可穿透使用浏览器原生菜单）
+contextMenu:
+  enable: false
+
 # 动效开关。无论开关如何，prefers-reduced-motion 始终优先。
 motion:
   pageTransitions: true
   reveal: true
   heroParallax: true
+  heroSnap: false
   peek: true
   themeRipple: true
   # 鼠标点击时的小纸屑/星星
   confetti: true
+  # celebrate 仅在庆祝动作（钓鱼、复制代码、打开打赏）触发 / all 全站点击 / off 关闭
+  confettiScope: celebrate

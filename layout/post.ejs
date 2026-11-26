@@ -128,9 +128,8 @@
         </button>
       </section>
 
-      <div class="reward-modal" data-reward-modal hidden>
-        <div class="reward-modal__scrim" data-reward-close></div>
-        <div class="reward-modal__card" role="dialog" aria-modal="true" aria-labelledby="reward-title">
+      <dialog class="reward-modal" data-reward-modal aria-labelledby="reward-title">
+        <div class="reward-modal__card">
           <button class="reward-modal__close" type="button" data-reward-close aria-label="关闭打赏弹层">×</button>
           <p class="reward-modal__kicker" aria-hidden="true">☕ Support</p>
           <h2 id="reward-title"><%= rewardConf.title || '请我喝杯咖啡' %></h2>
@@ -159,7 +158,7 @@
 
           <p class="reward-modal__note"><span aria-hidden="true">🔒</span><%= rewardConf.note || '扫码仅用于展示收款码，本站不会发起扣款，也不会收集任何支付信息。' %></p>
         </div>
-      </div>
+      </dialog>
       <% } %>
 
       <% if (postOptions.prevNext !== false && (post.prev || post.next)) { %>

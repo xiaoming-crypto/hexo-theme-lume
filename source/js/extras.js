@@ -1026,6 +1026,7 @@
             result.innerHTML = '';
             result.appendChild(win);
           });
+          celebrate(cast);
         })
         .catch(function () {
           box.classList.remove('is-casting');
@@ -1155,6 +1156,11 @@
   var confettiBooted = false;
   var palette = ['#f5822a', '#ffd166', '#ff8fab', '#7ee0c0', '#8ec5ff', '#c9a7ff'];
 
+  function confettiScope() {
+    if (root.getAttribute('data-confetti') === 'false') return 'off';
+    return root.getAttribute('data-confetti-scope') || 'celebrate';
+  }
+
   function confettiBurst(x, y) {
     for (var i = 0; i < 8; i++) {
       var bit = document.createElement('span');
@@ -1179,10 +1185,22 @@
     }
   }
 
+  function celebrate(targetOrX, y) {
+    if (reducedMotion() || confettiScope() === 'off') return;
+    if (typeof targetOrX === 'number' && typeof y === 'number') {
+      confettiBurst(targetOrX, y);
+      return;
+    }
+    if (targetOrX && typeof targetOrX.getBoundingClientRect === 'function') {
+      var rect = targetOrX.getBoundingClientRect();
+      confettiBurst(rect.left + rect.width / 2, rect.top + rect.height / 2);
+    }
+  }
+
   function bootConfetti() {
     if (confettiBooted) return;
     confettiBooted = true;
-    if (root.getAttribute('data-confetti') === 'false') return;
+    if (confettiScope() !== 'all') return;
 
     document.addEventListener('click', function (event) {
       if (reducedMotion()) return;
@@ -1268,14 +1286,15 @@
     if (!modal) {
       if (portals.length && portals[0].getAttribute('data-reward-path') === window.location.pathname) return;
       portals.forEach(function (el) {
+        if (el.open && typeof el.close === 'function') el.close();
         if (el.parentNode) el.parentNode.removeChild(el);
       });
       document.body.classList.remove('reward-open');
       return;
     }
-    /* 文章容器带有 reveal 的 transform，会让 position:fixed 相对容器定位；
-       把弹层挂到 body 上，同时清掉上一次 PJAX 留下的旧弹层。 */
+    /* 文章容器带有 reveal 的 transform，挂载到 body 并由原生 <dialog> 管理 Top Layer 与焦点陷阱。 */
     portals.forEach(function (el) {
+      if (el.open && typeof el.close === 'function') el.close();
       if (el.parentNode) el.parentNode.removeChild(el);
     });
     document.body.appendChild(modal);
@@ -1285,59 +1304,112 @@
 
     var openBtn = $('[data-reward-open]');
     var closeEls = $$('[data-reward-close]', modal);
-    var card = $('.reward-modal__card', modal);
     var methods = $$('[data-reward-method]', modal);
+    var panelsWrap = $('.reward-panels', modal);
     var panels = $$('[data-reward-panel]', modal);
-    var lastFocus = null;
-    var closeTimer = null;
+    var closeTimer = 0;
 
     function openModal() {
       window.clearTimeout(closeTimer);
-      lastFocus = document.activeElement;
-      modal.hidden = false;
+      if (typeof modal.showModal === 'function') {
+        if (!modal.open) modal.showModal();
+      } else {
+        modal.setAttribute('open', '');
+      }
       document.body.classList.add('reward-open');
       window.requestAnimationFrame(function () {
         modal.classList.add('is-open');
       });
+      celebrate(openBtn);
       var closeBtn = $('.reward-modal__close', modal);
-      if (closeBtn) window.setTimeout(function () { closeBtn.focus(); }, 120);
+      if (closeBtn) window.setTimeout(function () { closeBtn.focus(); }, 100);
+    }
+
+    function finishClose() {
+      modal.classList.remove('is-open');
+      document.body.classList.remove('reward-open');
+      if (typeof modal.close === 'function') {
+        if (modal.open) modal.close();
+      } else {
+        modal.removeAttribute('open');
+      }
     }
 
     function closeModal() {
+      window.clearTimeout(closeTimer);
       modal.classList.remove('is-open');
       document.body.classList.remove('reward-open');
-      closeTimer = window.setTimeout(function () {
-        modal.hidden = true;
-        if (lastFocus && lastFocus.focus) lastFocus.focus();
-      }, 340);
+      if (reducedMotion()) {
+        finishClose();
+        return;
+      }
+      closeTimer = window.setTimeout(finishClose, 240);
     }
 
     if (openBtn) openBtn.addEventListener('click', openModal);
     closeEls.forEach(function (el) {
       el.addEventListener('click', closeModal);
     });
-    if (card) {
-      card.addEventListener('keydown', function (event) {
-        if (event.key === 'Escape') closeModal();
-      });
-    }
-    document.addEventListener('keydown', function (event) {
-      if (event.key === 'Escape' && !modal.hidden) closeModal();
+    modal.addEventListener('click', function (event) {
+      if (event.target === modal) closeModal();
+    });
+    modal.addEventListener('cancel', function (event) {
+      event.preventDefault();
+      closeModal();
+    });
+    modal.addEventListener('close', function () {
+      window.clearTimeout(closeTimer);
+      modal.classList.remove('is-open');
+      document.body.classList.remove('reward-open');
     });
 
+    var panelToken = 0;
+    var panelTimer = 0;
     methods.forEach(function (btn) {
       btn.addEventListener('click', function () {
         var key = btn.getAttribute('data-reward-method');
+        if (btn.classList.contains('is-active')) return;
+
+        var token = ++panelToken;
+        window.clearTimeout(panelTimer);
+        var startHeight = panelsWrap && !reducedMotion() ? panelsWrap.getBoundingClientRect().height : 0;
+
         methods.forEach(function (other) {
           var active = other === btn;
           other.classList.toggle('is-active', active);
           other.setAttribute('aria-selected', active ? 'true' : 'false');
         });
+        if (panelsWrap && !reducedMotion()) {
+          panelsWrap.classList.remove('is-resizing');
+          panelsWrap.style.transition = 'none';
+          panelsWrap.style.height = 'auto';
+        }
         panels.forEach(function (panel) {
           var active = panel.getAttribute('data-reward-panel') === key;
           panel.hidden = !active;
           panel.classList.toggle('is-active', active);
         });
+
+        if (!panelsWrap || reducedMotion()) return;
+        var endHeight = panelsWrap.getBoundingClientRect().height;
+        if (Math.abs(endHeight - startHeight) < 1) {
+          panelsWrap.style.height = '';
+          panelsWrap.style.transition = '';
+          return;
+        }
+        panelsWrap.style.height = startHeight + 'px';
+        panelsWrap.classList.add('is-resizing');
+        void panelsWrap.offsetHeight;
+        panelsWrap.style.transition = '';
+        window.requestAnimationFrame(function () {
+          if (token !== panelToken) return;
+          panelsWrap.style.height = endHeight + 'px';
+        });
+        panelTimer = window.setTimeout(function () {
+          if (token !== panelToken) return;
+          panelsWrap.classList.remove('is-resizing');
+          panelsWrap.style.height = '';
+        }, 300);
       });
     });
   }
@@ -1517,11 +1589,13 @@
   }
 
   function bindContextMenu() {
+    if (root.getAttribute('data-context-menu') !== 'true') return;
     if (!window.matchMedia('(hover: hover) and (pointer: fine)').matches) return;
     if (document.documentElement.hasAttribute('data-ctx-menu')) return;
     document.documentElement.setAttribute('data-ctx-menu', '1');
 
     document.addEventListener('contextmenu', function (event) {
+      if (event.shiftKey) return;
       var target = event.target;
       if (!target || !target.closest) return;
       if (target.closest('input, textarea, select, [contenteditable=""], [contenteditable="true"]')) return;
@@ -1564,6 +1638,8 @@
      Public hooks (called by app.js)
   ============================================================= */
   window.LumeExtras = {
+    celebrate: celebrate,
+
     boot: function () {
       bootMusic();
       bootConfetti();

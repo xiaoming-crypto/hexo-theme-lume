@@ -15,9 +15,12 @@
       data-router="<%= flag(motion.pageTransitions) %>"
       data-reveal-motion="<%= flag(motion.reveal) %>"
       data-parallax="<%= flag(motion.heroParallax) %>"
+      data-hero-snap="<%= motion.heroSnap === true ? 'true' : 'false' %>"
       data-peek="<%= flag(motion.peek) %>"
       data-ripple="<%= flag(motion.themeRipple) %>"
       data-confetti="<%= flag(motion.confetti) %>"
+      data-confetti-scope="<%= motion.confetti === false ? 'off' : (motion.confettiScope || 'celebrate') %>"
+      data-context-menu="<%= (theme.contextMenu && theme.contextMenu.enable) ? 'true' : 'false' %>"
       style="--brand: <%= brandColor %>; --brand-dark: <%= brandDark %>; --selection: <%= selection %>;"
       data-label-empty="<%= __('search.empty') %>"
       data-label-empty-hint="<%= __('search.emptyHint') %>"
@@ -54,6 +57,7 @@
 </head>
 <body class="layout-<%= layoutName %>">
   <a class="skip-link" href="#main"><%= __('a11y.skip') %></a>
+  <div class="nav-progress" data-nav-progress aria-hidden="true"></div>
 
   <%- partial('_partial/header', { pageData: pageData }) %>
 
@@ -77,5 +81,7 @@
       <path class="to-top__arrow" d="M22 29V16M16.5 21.5 22 16l5.5 5.5"></path>
     </svg>
   </button>
+
+  <div class="lume-toast" data-toast role="status" aria-live="polite" hidden></div>
 </body>
 </html>

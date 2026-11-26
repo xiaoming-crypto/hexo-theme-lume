@@ -8,6 +8,7 @@
 <dialog class="search-dialog" data-search-dialog
         data-index="<%= url_for('/search.json') %>"
         data-max-results="<%= (theme.search && theme.search.maxResults) || 12 %>"
+        data-label-loading="<%= __('search.loading') %>"
         aria-labelledby="search-dialog-title">
   <div class="search-dialog__panel">
     <h2 class="sr-only" id="search-dialog-title"><%= __('search.title') %></h2>
@@ -25,6 +26,13 @@
     </form>
 
     <div class="search-suggest" data-search-suggest-wrap>
+      <div class="search-recent" data-search-recent hidden>
+        <div class="search-recent__head">
+          <span class="search-suggest__label">最近搜索</span>
+          <button class="search-recent__clear" type="button" data-search-clear-history>清空</button>
+        </div>
+        <div class="search-suggest__tags" data-search-recent-list></div>
+      </div>
       <span class="search-suggest__label"><%= __('search.popular') %></span>
       <div class="search-suggest__tags">
         <% hotTags.forEach(function (tag) { %>
@@ -36,6 +44,7 @@
     <div class="search-results" id="search-overlay-results" data-search-results role="listbox" aria-label="<%= __('search.title') %>"></div>
 
     <div class="search-dialog__foot">
+      <span><kbd>/</kbd> 快速搜索</span>
       <span><kbd>↑</kbd><kbd>↓</kbd> <%= __('search.hintUpDown') %></span>
       <span><kbd>↵</kbd> <%= __('search.hintEnter') %></span>
       <span class="search-dialog__count" data-search-count></span>
