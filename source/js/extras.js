@@ -882,13 +882,78 @@
     var castLabel = box.getAttribute('data-label-cast') || cast.textContent;
     var castingLabel = box.getAttribute('data-label-casting') || '抛竿中…';
     var emptyLabel = box.getAttribute('data-label-empty') || '今天鱼塘有点安静';
+    var resizeToken = 0;
+    var resizeTimer = 0;
+    var resizeEndHandler = null;
+
+    function cancelResize() {
+      if (resizeTimer) {
+        window.clearTimeout(resizeTimer);
+        resizeTimer = 0;
+      }
+      if (resizeEndHandler) {
+        result.removeEventListener('transitionend', resizeEndHandler);
+        resizeEndHandler = null;
+      }
+    }
+
+    function updateResult(renderFn) {
+      if (reducedMotion()) {
+        resizeToken += 1;
+        cancelResize();
+        result.classList.remove('is-resizing');
+        result.style.height = '';
+        result.style.transition = '';
+        renderFn();
+        return;
+      }
+
+      var token = ++resizeToken;
+      cancelResize();
+
+      var startHeight = result.getBoundingClientRect().height;
+
+      result.classList.remove('is-resizing');
+      result.style.transition = 'none';
+      result.style.height = 'auto';
+      renderFn();
+      var endHeight = result.getBoundingClientRect().height;
+
+      if (Math.abs(endHeight - startHeight) < 1) {
+        result.style.height = '';
+        result.style.transition = '';
+        return;
+      }
+
+      result.style.height = startHeight + 'px';
+      result.classList.add('is-resizing');
+      void result.offsetHeight;
+      result.style.transition = '';
+
+      function settle() {
+        if (token !== resizeToken) return;
+        cancelResize();
+        result.classList.remove('is-resizing');
+        result.style.height = '';
+      }
+
+      resizeEndHandler = function (event) {
+        if (event.target === result && event.propertyName === 'height') settle();
+      };
+      result.addEventListener('transitionend', resizeEndHandler);
+      resizeTimer = window.setTimeout(settle, 700);
+
+      window.requestAnimationFrame(function () {
+        if (token !== resizeToken) return;
+        result.style.height = endHeight + 'px';
+      });
+    }
 
     cast.addEventListener('click', function () {
       if (cast.disabled) return;
       cast.disabled = true;
       cast.textContent = castingLabel;
       box.classList.add('is-casting');
-      result.textContent = '';
 
       loadFriendArticles(box, false)
         .then(function (list) {
@@ -897,7 +962,9 @@
           cast.textContent = castLabel;
 
           if (!list.length) {
-            result.textContent = emptyLabel;
+            updateResult(function () {
+              result.textContent = emptyLabel;
+            });
             return;
           }
 
@@ -915,14 +982,18 @@
           link.textContent = '《' + (article.title || article.link) + '》';
           win.appendChild(link);
 
-          result.innerHTML = '';
-          result.appendChild(win);
+          updateResult(function () {
+            result.innerHTML = '';
+            result.appendChild(win);
+          });
         })
         .catch(function () {
           box.classList.remove('is-casting');
           cast.disabled = false;
           cast.textContent = castLabel;
-          result.textContent = emptyLabel;
+          updateResult(function () {
+            result.textContent = emptyLabel;
+          });
         });
     });
   }
