@@ -65,7 +65,7 @@
           </span>
         <% } %>
         <span class="hero-card__meta">
-          <span class="hero-card__badge">最新</span>
+          <span class="hero-card__badge"><%= Number(featured.sticky) > 0 ? __('post.pinned') : '最新' %></span>
           <time datetime="<%= date_xml(featured.date) %>"><%= date(featured.date, 'YYYY-MM-DD') %></time>
         </span>
         <strong class="hero-card__title"><%= featured.title %></strong>

@@ -69,6 +69,35 @@ post:
   prevNext: true
   # 版权说明，留空则不显示版权框
   license: ""
+  # 相关文章推荐（按同标签/同分类/同系列自动匹配）
+  related:
+    enable: true
+    count: 3
+  # 超过指定天数未更新则显示时效提醒（0 表示关闭；单篇 front-matter 可设 outdated: false 关闭）
+  outdatedDays: 365
+
+# 代码块 2.0
+code:
+  # 显示行号（CSS 计数器实现，换行时不漂移、复制不带行号）
+  lineNumbers: true
+  # 默认自动换行
+  wrap: false
+  # 超过该行数自动折叠（0 表示不折叠）
+  collapseLines: 22
+  # 折叠时展示的最大高度（px）
+  collapseHeight: 360
+
+# 数学公式（KaTeX，按需懒加载；普通文章 0 KB 开销）
+math:
+  enable: true
+  katexCss: "https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css"
+  katexJs: "https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js"
+  autoRenderJs: "https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js"
+
+# 图表（Mermaid，按需懒加载，随明暗主题自动重绘；普通文章 0 KB 开销）
+mermaid:
+  enable: true
+  js: "https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js"
 
 # 打赏（仅展示收款码，不接入任何真实支付）
 # 默认关闭；开启后文章底部会出现打赏入口，弹层内展示你提供的微信 / 支付宝收款码。

@@ -21,6 +21,12 @@ action:
   copied: Copied
   copying: Copying…
   copyFailed: Failed
+  wrap: Wrap
+  unwrap: Unwrap
+  expandCode: Expand
+  collapseCode: Collapse
+  copyLink: Copy link
+  linkCopied: Post link copied
 
 post:
   minutes: min read
@@ -32,6 +38,19 @@ post:
   license: License
   comments: Comments
   commentsLoading: Loading comments…
+  pinned: Pinned
+  related: Related posts
+  series: Series
+  tocDrawer: Contents
+  outdatedNotice: Last updated {days} days ago ({date}). Some details or versions may be outdated.
+
+lightbox:
+  label: Image preview
+  close: Close
+  prev: Previous
+  next: Next
+  zoomIn: Zoom in
+  zoomOut: Reset zoom
 
 search:
   title: Search

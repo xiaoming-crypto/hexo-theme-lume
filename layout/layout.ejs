@@ -7,6 +7,9 @@
   const brandDark = theme.accentDark || brandColor;
   const selection = (theme.color && theme.color.textSelection) || '#ffd166';
   const assetVer = lume_version();
+  const codeConf = theme.code || {};
+  const mathConf = theme.math || {};
+  const mermaidConf = theme.mermaid || {};
 %>
 <!DOCTYPE html>
 <html lang="<%= config.language || 'zh-CN' %>" class="no-js" data-theme="light"
@@ -21,6 +24,16 @@
       data-confetti="<%= flag(motion.confetti) %>"
       data-confetti-scope="<%= motion.confetti === false ? 'off' : (motion.confettiScope || 'celebrate') %>"
       data-context-menu="<%= (theme.contextMenu && theme.contextMenu.enable) ? 'true' : 'false' %>"
+      data-code-line-numbers="<%= codeConf.lineNumbers === false ? 'false' : 'true' %>"
+      data-code-wrap="<%= codeConf.wrap === true ? 'true' : 'false' %>"
+      data-code-collapse-lines="<%= typeof codeConf.collapseLines === 'number' ? codeConf.collapseLines : 22 %>"
+      data-code-collapse-height="<%= typeof codeConf.collapseHeight === 'number' ? codeConf.collapseHeight : 360 %>"
+      data-math-enable="<%= mathConf.enable === false ? 'false' : 'true' %>"
+      data-katex-css="<%= mathConf.katexCss || 'https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css' %>"
+      data-katex-js="<%= mathConf.katexJs || 'https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js' %>"
+      data-katex-auto="<%= mathConf.autoRenderJs || 'https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js' %>"
+      data-mermaid-enable="<%= mermaidConf.enable === false ? 'false' : 'true' %>"
+      data-mermaid-js="<%= mermaidConf.js || 'https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js' %>"
       style="--brand: <%= brandColor %>; --brand-dark: <%= brandDark %>; --selection: <%= selection %>;"
       data-label-empty="<%= __('search.empty') %>"
       data-label-empty-hint="<%= __('search.emptyHint') %>"
@@ -29,7 +42,13 @@
       data-label-copy="<%= __('action.copy') %>"
       data-label-copied="<%= __('action.copied') %>"
       data-label-copying="<%= __('action.copying') %>"
-      data-label-copy-failed="<%= __('action.copyFailed') %>">
+      data-label-copy-failed="<%= __('action.copyFailed') %>"
+      data-label-wrap="<%= __('action.wrap') %>"
+      data-label-unwrap="<%= __('action.unwrap') %>"
+      data-label-expand-code="<%= __('action.expandCode') %>"
+      data-label-collapse-code="<%= __('action.collapseCode') %>"
+      data-label-copy-link="<%= __('action.copyLink') %>"
+      data-label-link-copied="<%= __('action.linkCopied') %>">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
@@ -58,6 +77,7 @@
 <body class="layout-<%= layoutName %>">
   <a class="skip-link" href="#main"><%= __('a11y.skip') %></a>
   <div class="nav-progress" data-nav-progress aria-hidden="true"></div>
+  <div class="read-progress" data-read-progress aria-hidden="true"></div>
 
   <%- partial('_partial/header', { pageData: pageData }) %>
 
@@ -81,6 +101,43 @@
       <path class="to-top__arrow" d="M22 29V16M16.5 21.5 22 16l5.5 5.5"></path>
     </svg>
   </button>
+
+  <button class="toc-fab" type="button" data-toc-fab aria-label="<%= __('post.tocDrawer') %>" aria-haspopup="dialog" aria-expanded="false" hidden>
+    <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M8 6h12M8 12h12M8 18h12M4 6h.01M4 12h.01M4 18h.01"></path></svg>
+  </button>
+
+  <dialog class="toc-drawer" data-toc-drawer aria-labelledby="toc-drawer-title">
+    <div class="toc-drawer__sheet">
+      <div class="toc-drawer__head">
+        <span class="toc-drawer__title" id="toc-drawer-title"><%= __('post.toc') %></span>
+        <button class="toc-drawer__close" type="button" data-toc-drawer-close aria-label="<%= __('nav.close') %>">×</button>
+      </div>
+      <div class="toc-drawer__body" data-toc data-toc-drawer-body></div>
+    </div>
+  </dialog>
+
+  <dialog class="lume-lightbox" data-lightbox aria-label="<%= __('lightbox.label') %>">
+    <div class="lume-lightbox__bar">
+      <span class="lume-lightbox__counter" data-lightbox-counter>1 / 1</span>
+      <div class="lume-lightbox__controls">
+        <button class="lume-lightbox__btn" type="button" data-lightbox-zoom
+                data-label-zoom-in="<%= __('lightbox.zoomIn') %>"
+                data-label-zoom-out="<%= __('lightbox.zoomOut') %>"
+                aria-label="<%= __('lightbox.zoomIn') %>" aria-pressed="false">
+          <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><circle cx="11" cy="11" r="6.5"></circle><path d="m16 16 4.5 4.5M11 8v6M8 11h6"></path></svg>
+        </button>
+        <button class="lume-lightbox__btn" type="button" data-lightbox-close aria-label="<%= __('lightbox.close') %>">×</button>
+      </div>
+    </div>
+    <div class="lume-lightbox__stage" data-lightbox-stage>
+      <button class="lume-lightbox__nav lume-lightbox__nav--prev" type="button" data-lightbox-prev aria-label="<%= __('lightbox.prev') %>">‹</button>
+      <div class="lume-lightbox__frame" data-lightbox-frame>
+        <img class="lume-lightbox__img" data-lightbox-img alt="" draggable="false">
+      </div>
+      <button class="lume-lightbox__nav lume-lightbox__nav--next" type="button" data-lightbox-next aria-label="<%= __('lightbox.next') %>">›</button>
+    </div>
+    <p class="lume-lightbox__caption" data-lightbox-caption hidden></p>
+  </dialog>
 
   <div class="lume-toast" data-toast role="status" aria-live="polite" hidden></div>
 </body>
