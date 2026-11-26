@@ -263,6 +263,8 @@ contextMenu:
 # 动效开关。无论开关如何，prefers-reduced-motion 始终优先。
 motion:
   pageTransitions: true
+  # 渐进增强 View Transitions API（不支持或开启减弱动态效果时自动回退）
+  viewTransitions: true
   reveal: true
   heroParallax: true
   heroSnap: false

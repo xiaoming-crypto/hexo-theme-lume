@@ -56,7 +56,7 @@
                data-reveal
                <% if (item.siteshot) { %>data-siteshot="<%= item.siteshot %>"<% } %>>
               <span class="friend-card__avatar">
-                <% if (item.avatar) { %><img src="<%= item.avatar %>" alt="" loading="lazy" decoding="async"><% } else { %><i><%= (item.name || '?').charAt(0) %></i><% } %>
+                <% if (item.avatar) { %><img src="<%= item.avatar %>" alt="" width="46" height="46" loading="lazy" decoding="async"><% } else { %><i><%= (item.name || '?').charAt(0) %></i><% } %>
               </span>
               <span class="friend-card__body">
                 <strong><%= item.name %><% if (item.recommend) { %><em class="friend-card__star" title="推荐" aria-label="推荐">★</em><% } %></strong>

@@ -85,7 +85,7 @@
   <% if (showCover) { %>
   <figure class="post-cover" data-post-cover>
     <div class="post-cover__frame">
-      <img src="<%= post.cover %>" alt="<%= post.title %>" loading="eager" decoding="async" fetchpriority="high">
+      <img src="<%= post.cover %>" alt="<%= post.title %>" width="1280" height="720" loading="eager" decoding="async" fetchpriority="high">
     </div>
     <% if (post.coverCaption) { %><figcaption><%= post.coverCaption %></figcaption><% } %>
   </figure>
@@ -189,7 +189,7 @@
             <% rewardKeys.forEach(function (key, index) { %>
             <figure class="reward-panel<%= index === 0 ? ' is-active' : '' %>" id="reward-panel-<%= key %>" role="tabpanel" data-reward-panel="<%= key %>"<%= index === 0 ? '' : ' hidden' %>>
               <% if (rewardMethods[key].image) { %>
-                <img class="reward-panel__qr" src="<%= url_for(rewardMethods[key].image) %>" alt="<%= (rewardMethods[key].label || key) %>收款码" loading="lazy" decoding="async">
+                <img class="reward-panel__qr" src="<%= url_for(rewardMethods[key].image) %>" alt="<%= (rewardMethods[key].label || key) %>收款码" width="220" height="220" loading="lazy" decoding="async">
               <% } %>
               <figcaption><%= rewardMethods[key].label || key %>收款码</figcaption>
             </figure>
