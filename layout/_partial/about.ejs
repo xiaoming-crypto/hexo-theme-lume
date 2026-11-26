@@ -38,7 +38,7 @@
       </p>
       <% } %>
       <% if (bio) { %><p class="about__bio" data-reveal style="--i: 3"><%= bio %></p><% } %>
-      <p class="about__status" data-reveal style="--i: 4"><span class="about__status-dot" aria-hidden="true"></span>正在慢慢更新这本数字手账</p>
+      <p class="about__status" data-reveal style="--i: 4"><span class="about__status-dot" aria-hidden="true"></span><%= __('about.status') %></p>
     </div>
   </header>
 
@@ -62,7 +62,7 @@
       <% if (hasContent) { %>
         <div class="about__paper" data-reveal>
           <span class="about__paper-tape" aria-hidden="true"></span>
-          <p class="about__paper-label" aria-hidden="true">☞ 关于我</p>
+          <p class="about__paper-label" aria-hidden="true">☞ <%= __('about.paper') %></p>
           <div class="post-body about__body"><%- page.content %></div>
         </div>
       <% } %>

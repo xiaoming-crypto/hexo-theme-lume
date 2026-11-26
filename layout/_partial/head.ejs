@@ -8,9 +8,9 @@
     if (pd.year && pd.month && pd.day) {
       heading = pd.year + '-' + String(pd.month).padStart(2, '0') + '-' + String(pd.day).padStart(2, '0');
     } else if (pd.year && pd.month) {
-      heading = pd.year + ' 年 ' + pd.month + ' 月';
+      heading = __('archive.yearMonth', pd.year, pd.month);
     } else if (pd.year) {
-      heading = pd.year + ' 年';
+      heading = __('archive.year', pd.year);
     } else {
       heading = __('archive.title');
     }

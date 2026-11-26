@@ -23,6 +23,11 @@
     if (element) element.textContent = value;
   }
 
+  function rootLabel(name, fallback) {
+    var value = root.getAttribute('data-label-' + name);
+    return value || fallback;
+  }
+
   function clamp(value, min, max) {
     return Math.min(max, Math.max(min, value));
   }
@@ -82,12 +87,13 @@
     error: false,
     volume: 0.7,
     labels: {
-      play: '播放',
-      pause: '暂停',
-      loading: '歌单加载中…',
-      error: '歌单加载失败',
-      retry: '重新加载',
-      capsule: '听点歌'
+      play: 'Play',
+      pause: 'Pause',
+      loading: 'Loading playlist…',
+      error: 'Playlist is unavailable right now.',
+      retry: 'Reload',
+      capsule: 'Play something',
+      tracks: 'tracks'
     }
   };
 
@@ -109,7 +115,7 @@
 
   function readMusicLabels() {
     var element = musicSource();
-    ['play', 'pause', 'loading', 'error', 'retry', 'capsule'].forEach(function (key) {
+    ['play', 'pause', 'loading', 'error', 'retry', 'capsule', 'tracks'].forEach(function (key) {
       var value = element && element.getAttribute('data-label-' + key);
       if (value) music.labels[key] = value;
     });
@@ -355,7 +361,7 @@
     text($('[data-music-pill]'), song.name || music.labels.capsule);
 
     var count = $('[data-music-count]');
-    if (count) text(count, music.list.length + ' 首');
+    if (count) text(count, music.list.length + ' ' + music.labels.tracks);
 
     syncListCurrent();
     writeStore('lume-music-index', String(music.index));
@@ -562,7 +568,7 @@
     listElement.appendChild(fragment);
 
     var countElement = $('[data-music-count]', page);
-    if (countElement) text(countElement, music.list.length + ' 首');
+    if (countElement) text(countElement, music.list.length + ' ' + music.labels.tracks);
   }
 
   function toggleCapsule(force) {
@@ -920,8 +926,8 @@
       })
       .filter(Boolean);
     var castLabel = box.getAttribute('data-label-cast') || cast.textContent;
-    var castingLabel = box.getAttribute('data-label-casting') || '抛竿中…';
-    var emptyLabel = box.getAttribute('data-label-empty') || '今天鱼塘有点安静';
+    var castingLabel = box.getAttribute('data-label-casting') || 'Casting…';
+    var emptyLabel = box.getAttribute('data-label-empty') || 'The pond is quiet today';
     var resizeToken = 0;
     var resizeTimer = 0;
     var resizeEndHandler = null;
@@ -1045,8 +1051,8 @@
     if (!listElement) return;
 
     var pageSize = parseInt(feed.getAttribute('data-page-size'), 10) || 12;
-    var loadingLabel = feed.getAttribute('data-label-loading') || '正在打捞…';
-    var emptyLabel = feed.getAttribute('data-label-empty') || '今天鱼塘有点安静';
+    var loadingLabel = feed.getAttribute('data-label-loading') || 'Fishing for new posts…';
+    var emptyLabel = feed.getAttribute('data-label-empty') || 'The pond is quiet today';
 
     if (status) {
       status.hidden = false;
@@ -1489,11 +1495,12 @@
   }
 
   function openContextMenu(x, y, target) {
+    var copiedText = rootLabel('copied', 'Copied');
     if (!ctxMenu) {
       ctxMenu = document.createElement('div');
       ctxMenu.className = 'lume-menu';
       ctxMenu.setAttribute('role', 'menu');
-      ctxMenu.setAttribute('aria-label', '快捷菜单');
+      ctxMenu.setAttribute('aria-label', rootLabel('ctx-label', 'Quick menu'));
       ctxMenu.hidden = true;
       document.body.appendChild(ctxMenu);
     }
@@ -1501,7 +1508,7 @@
     ctxMenu.innerHTML = '';
     var head = document.createElement('div');
     head.className = 'lume-menu__head';
-    head.textContent = '快捷操作';
+    head.textContent = rootLabel('ctx-head', 'Quick actions');
     ctxMenu.appendChild(head);
 
     var selection = (window.getSelection ? window.getSelection().toString() : '').trim();
@@ -1512,12 +1519,12 @@
     if (link) {
       var href = link.href;
       items.push(
-        menuItem('在新标签页打开', '↗', '', function () {
+        menuItem(rootLabel('ctx-open-tab', 'Open in new tab'), '↗', '', function () {
           window.open(href, '_blank', 'noopener');
         }),
-        menuItem('复制链接地址', '⧉', '', function (button) {
+        menuItem(rootLabel('ctx-copy-link', 'Copy link address'), '⧉', '', function (button) {
           copyValue(href).then(function () {
-            if (button) button.querySelector('span:nth-child(2)').textContent = '已复制';
+            if (button) button.querySelector('span:nth-child(2)').textContent = copiedText;
           });
         })
       );
@@ -1525,34 +1532,39 @@
 
     if (selection) {
       items.push(
-        menuItem('复制选中文字', '“”', selection.length + ' 字', function (button) {
-          copyValue(selection).then(function (ok) {
-            if (ok && button) button.querySelector('span:nth-child(2)').textContent = '已复制';
-          });
-        })
+        menuItem(
+          rootLabel('ctx-copy-selection', 'Copy selection'),
+          '“”',
+          selection.length + ' ' + rootLabel('ctx-chars', 'chars'),
+          function (button) {
+            copyValue(selection).then(function (ok) {
+              if (ok && button) button.querySelector('span:nth-child(2)').textContent = copiedText;
+            });
+          }
+        )
       );
     }
 
     if (!link && image && image.src) {
       items.push(
-        menuItem('在新标签页查看图片', '⊞', '', function () {
+        menuItem(rootLabel('ctx-open-image', 'Open image in new tab'), '⊞', '', function () {
           window.open(image.src, '_blank', 'noopener');
         }),
-        menuItem('复制图片地址', '⧉', '', function (button) {
+        menuItem(rootLabel('ctx-copy-image', 'Copy image address'), '⧉', '', function (button) {
           copyValue(image.src).then(function () {
-            if (button) button.querySelector('span:nth-child(2)').textContent = '已复制';
+            if (button) button.querySelector('span:nth-child(2)').textContent = copiedText;
           });
         })
       );
     }
 
     items.push(
-      menuItem('复制页面链接', '⧉', '', function (button) {
+      menuItem(rootLabel('ctx-copy-page', 'Copy page link'), '⧉', '', function (button) {
         copyValue(window.location.href).then(function () {
-          if (button) button.querySelector('span:nth-child(2)').textContent = '已复制';
+          if (button) button.querySelector('span:nth-child(2)').textContent = copiedText;
         });
       }),
-      menuItem('回到顶部', '↑', '', function () {
+      menuItem(rootLabel('to-top', 'Back to top'), '↑', '', function () {
         window.scrollTo({ top: 0, behavior: reducedMotion() ? 'auto' : 'smooth' });
       })
     );
@@ -1626,11 +1638,13 @@
     var card = toggle.closest('.music-list-card');
     if (!card) return;
     var label = $('[data-music-list-toggle-label]', toggle);
+    var expandText = toggle.getAttribute('data-label-expand') || 'Show playlist';
+    var collapseText = toggle.getAttribute('data-label-collapse') || 'Hide playlist';
 
     toggle.addEventListener('click', function () {
       var open = card.classList.toggle('is-open');
       toggle.setAttribute('aria-expanded', open ? 'true' : 'false');
-      text(label, open ? '收起歌单' : '展开歌单');
+      text(label, open ? collapseText : expandText);
     });
   }
 

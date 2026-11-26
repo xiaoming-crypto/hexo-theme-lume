@@ -12,7 +12,12 @@
   const provider = comments.provider || 'giscus';
   const giscus = comments.giscus || {};
   const twikoo = comments.twikoo || {};
-  const hasComments = !!comments.enable && ((provider === 'giscus' && giscus.repo) || (provider === 'twikoo' && twikoo.envId));
+  const waline = comments.waline || {};
+  const hasComments = !!comments.enable && (
+    (provider === 'giscus' && giscus.repo) ||
+    (provider === 'twikoo' && twikoo.envId) ||
+    (provider === 'waline' && waline.serverURL)
+  );
   const colorConf = (theme.color && theme.color.mainTone) || {};
   const relatedConf = postOptions.related || {};
   const relatedPosts = relatedConf.enable === false ? [] : lume_related_posts(post, relatedConf.count || 3);
@@ -28,7 +33,7 @@
          data-cover-change="<%= colorConf.coverChange === false ? 'false' : 'true' %>"
          data-color-enabled="<%= colorConf.enable === false ? 'false' : 'true' %>">
   <header class="post-head">
-    <nav class="post-crumb" aria-label="Breadcrumb" data-reveal>
+    <nav class="post-crumb" aria-label="<%= __('a11y.breadcrumb') %>" data-reveal>
       <a href="<%= url_for('/') %>"><%= __('nav.home') %></a>
       <span aria-hidden="true">/</span>
       <% if (categories.length) { %>
@@ -134,7 +139,7 @@
 
       <footer class="post-end">
         <% if (tags.length) { %>
-        <ul class="post-tags" aria-label="Tags" data-reveal>
+        <ul class="post-tags" aria-label="<%= __('a11y.tags') %>" data-reveal>
           <% tags.forEach(function (tag) { %>
             <li><a href="<%= url_for(tag.path) %>"><span aria-hidden="true">#</span><%= tag.name %></a></li>
           <% }) %>
@@ -160,22 +165,22 @@
       <section class="reward" data-reward>
         <span class="reward__sticker" aria-hidden="true">♥</span>
         <div class="reward__copy">
-          <h2><%= rewardConf.title || '请我喝杯咖啡' %></h2>
-          <p><%= rewardConf.intro || '如果这篇内容帮到了你，可以请我喝杯咖啡。' %></p>
+          <h2><%= rewardConf.title || __('reward.title') %></h2>
+          <p><%= rewardConf.intro || __('reward.intro') %></p>
         </div>
         <button class="btn btn--pop reward__open" type="button" data-reward-open aria-haspopup="dialog">
-          打赏一下 <%- lume_icon('heart') %>
+          <%= __('reward.open') %> <%- lume_icon('heart') %>
         </button>
       </section>
 
       <dialog class="reward-modal" data-reward-modal aria-labelledby="reward-title">
         <div class="reward-modal__card">
-          <button class="reward-modal__close" type="button" data-reward-close aria-label="关闭打赏弹层">×</button>
+          <button class="reward-modal__close" type="button" data-reward-close aria-label="<%= __('reward.close') %>">×</button>
           <p class="reward-modal__kicker" aria-hidden="true">☕ Support</p>
-          <h2 id="reward-title"><%= rewardConf.title || '请我喝杯咖啡' %></h2>
+          <h2 id="reward-title"><%= rewardConf.title || __('reward.title') %></h2>
           <p class="reward-modal__intro"><%= rewardConf.intro || '' %></p>
 
-          <div class="reward-methods" role="tablist" aria-label="支付方式">
+          <div class="reward-methods" role="tablist" aria-label="<%= __('reward.methods') %>">
             <% rewardKeys.forEach(function (key, index) { %>
             <button class="reward-method<%= index === 0 ? ' is-active' : '' %>" type="button" role="tab"
                     aria-selected="<%= index === 0 ? 'true' : 'false' %>"
@@ -189,20 +194,20 @@
             <% rewardKeys.forEach(function (key, index) { %>
             <figure class="reward-panel<%= index === 0 ? ' is-active' : '' %>" id="reward-panel-<%= key %>" role="tabpanel" data-reward-panel="<%= key %>"<%= index === 0 ? '' : ' hidden' %>>
               <% if (rewardMethods[key].image) { %>
-                <img class="reward-panel__qr" src="<%= url_for(rewardMethods[key].image) %>" alt="<%= (rewardMethods[key].label || key) %>收款码" width="220" height="220" loading="lazy" decoding="async">
+                <img class="reward-panel__qr" src="<%= url_for(rewardMethods[key].image) %>" alt="<%= __('reward.qr', rewardMethods[key].label || key) %>" width="220" height="220" loading="lazy" decoding="async">
               <% } %>
-              <figcaption><%= rewardMethods[key].label || key %>收款码</figcaption>
+              <figcaption><%= __('reward.qr', rewardMethods[key].label || key) %></figcaption>
             </figure>
             <% }); %>
           </div>
 
-          <p class="reward-modal__note"><%- lume_icon('lock') %><%= rewardConf.note || '扫码仅用于展示收款码，本站不会发起扣款，也不会收集任何支付信息。' %></p>
+          <p class="reward-modal__note"><%- lume_icon('lock') %><%= rewardConf.note || __('reward.note') %></p>
         </div>
       </dialog>
       <% } %>
 
       <% if (postOptions.prevNext !== false && (post.prev || post.next)) { %>
-      <nav class="post-nav" aria-label="Post navigation">
+      <nav class="post-nav" aria-label="<%= __('a11y.postNav') %>">
         <% if (post.prev) { %>
         <a class="post-nav__item post-nav__item--prev" href="<%= url_for(post.prev.path) %>">
           <span class="post-nav__label"><span aria-hidden="true">←</span> <%= __('post.prev') %></span>

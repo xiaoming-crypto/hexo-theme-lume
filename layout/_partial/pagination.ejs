@@ -17,13 +17,13 @@
   }
 %>
 <% if (total > 1) { %>
-<nav class="pager" aria-label="Pagination">
+<nav class="pager" aria-label="<%= __('a11y.pagination') %>">
   <% if (page.prev_link) { %>
     <a class="pager__step" href="<%= url_for(page.prev_link) %>" rel="prev">
-      <span aria-hidden="true">←</span> 上一页
+      <span aria-hidden="true">←</span> <%= __('pager.prev') %>
     </a>
   <% } else { %>
-    <span class="pager__step is-disabled" aria-hidden="true"><span>←</span> 上一页</span>
+    <span class="pager__step is-disabled" aria-hidden="true"><span>←</span> <%= __('pager.prev') %></span>
   <% } %>
 
   <span class="pager__pages">
@@ -42,10 +42,10 @@
 
   <% if (page.next_link) { %>
     <a class="pager__step" href="<%= url_for(page.next_link) %>" rel="next">
-      下一页 <span aria-hidden="true">→</span>
+      <%= __('pager.next') %> <span aria-hidden="true">→</span>
     </a>
   <% } else { %>
-    <span class="pager__step is-disabled" aria-hidden="true">下一页 <span>→</span></span>
+    <span class="pager__step is-disabled" aria-hidden="true"><%= __('pager.next') %> <span>→</span></span>
   <% } %>
 </nav>
 <% } %>

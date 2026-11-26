@@ -1,10 +1,10 @@
 <%
   const nav = (theme.menu && theme.menu.length) ? theme.menu : [
-    { label: '首页', path: '/' },
-    { label: '文章', path: '/archives/' },
-    { label: '友链', path: '/link/' },
-    { label: '音乐', path: '/music/' },
-    { label: '关于', path: '/about/' }
+    { label: __('nav.home'), path: '/' },
+    { label: __('nav.posts'), path: '/archives/' },
+    { label: __('friends.title'), path: '/link/' },
+    { label: __('music.title'), path: '/music/' },
+    { label: __('nav.about'), path: '/about/' }
   ];
   const brand = theme.brand || {};
   const logo = brand.logo || '';
@@ -46,12 +46,12 @@
 
     <div class="header__tools">
       <% if (travelling.enable) { %>
-        <a class="tool tool--travelling" href="<%= travelling.url || 'https://www.travellings.cn/go.html' %>" target="_blank" rel="noopener noreferrer" title="开往" aria-label="开往">
+        <a class="tool tool--travelling" href="<%= travelling.url || 'https://www.travellings.cn/go.html' %>" target="_blank" rel="noopener noreferrer" title="<%= __('a11y.travelling') %>" aria-label="<%= __('a11y.travelling') %>">
           <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 15V7a4 4 0 0 1 4-4h4a4 4 0 0 1 4 4v8"/><path d="M6 11h12"/><path d="m8 19-2 2M16 19l2 2"/><circle cx="9" cy="15" r="1"/><circle cx="15" cy="15" r="1"/></svg>
         </a>
       <% } %>
       <% if (randomPost.enable) { %>
-        <button class="tool tool--random" type="button" data-random-post title="随便逛逛" aria-label="随便逛逛">
+        <button class="tool tool--random" type="button" data-random-post title="<%= __('a11y.random') %>" aria-label="<%= __('a11y.random') %>">
           <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="4" width="16" height="16" rx="4"/><circle cx="9" cy="9" r="1"/><circle cx="15" cy="9" r="1"/><circle cx="9" cy="15" r="1"/><circle cx="15" cy="15" r="1"/><circle cx="12" cy="12" r="1"/></svg>
         </button>
       <% } %>
@@ -88,8 +88,8 @@
     <% }); %>
   </nav>
   <div class="mobile-nav__foot">
-    <% if (travelling.enable) { %><a href="<%= travelling.url || 'https://www.travellings.cn/go.html' %>" target="_blank" rel="noopener noreferrer"><%- lume_icon('train') %> 开往</a><% } %>
-    <% if (randomPost.enable) { %><button type="button" data-random-post><%- lume_icon('dice') %> 随便逛逛</button><% } %>
-    <button type="button" data-search-open><%- lume_icon('search') %> 搜索</button>
+    <% if (travelling.enable) { %><a href="<%= travelling.url || 'https://www.travellings.cn/go.html' %>" target="_blank" rel="noopener noreferrer"><%- lume_icon('train') %> <%= __('a11y.travelling') %></a><% } %>
+    <% if (randomPost.enable) { %><button type="button" data-random-post><%- lume_icon('dice') %> <%= __('a11y.random') %></button><% } %>
+    <button type="button" data-search-open><%- lume_icon('search') %> <%= __('nav.search') %></button>
   </div>
 </aside>

@@ -35,7 +35,7 @@
     </div>
     <div class="fishing__body">
       <h2><%- lume_icon('fish') %> <%= __('friends.fishing') %></h2>
-      <p>在友链的鱼塘里，随机捞一篇好文章。</p>
+      <p><%= __('friends.fishingIntro') %></p>
       <button class="btn btn--pop" type="button" data-fishing-cast><%= __('friends.cast') %></button>
       <div class="fishing__result" data-fishing-result aria-live="polite"></div>
     </div>
@@ -47,7 +47,7 @@
       <section class="friend-group" data-reveal style="--i: <%= Math.min(gi, 4) %>">
         <header class="friend-group__head">
           <h2><span aria-hidden="true">◍</span> <%= group.class_name || __('friends.title') %></h2>
-          <span><%= (group.link_list || []).length %> 位</span>
+          <span><%= (group.link_list || []).length %> <%= __('friends.count') %></span>
           <% if (group.class_desc) { %><p><%= group.class_desc %></p><% } %>
         </header>
         <div class="friend-grid friend-grid--<%= group.flink_style || 'flexcard' %>">
@@ -59,7 +59,7 @@
                 <% if (item.avatar) { %><img src="<%= item.avatar %>" alt="" width="46" height="46" loading="lazy" decoding="async"><% } else { %><i><%= (item.name || '?').charAt(0) %></i><% } %>
               </span>
               <span class="friend-card__body">
-                <strong><%= item.name %><% if (item.recommend) { %><em class="friend-card__star" title="推荐" aria-label="推荐">★</em><% } %></strong>
+                <strong><%= item.name %><% if (item.recommend) { %><em class="friend-card__star" title="<%= __('friends.recommend') %>" aria-label="<%= __('friends.recommend') %>">★</em><% } %></strong>
                 <small><%= item.descr || '' %></small>
                 <% if (item.tag) { %><span class="pill pill--sm"><%= item.tag %></span><% } %>
               </span>

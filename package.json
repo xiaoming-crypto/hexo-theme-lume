@@ -1,7 +1,11 @@
 {
   "name": "hexo-theme-lume",
-  "version": "0.21.0",
+  "version": "1.0.0",
   "description": "Lume — a playful sticker-scrapbook Hexo theme with music, friends, and springy motion.",
+  "scripts": {
+    "qa": "node tools/qa.mjs",
+    "sync": "node tools/sync.mjs"
+  },
   "repository": {
     "type": "git",
     "url": "https://github.com/xiaoming-crypto/hexo-theme-lume.git"

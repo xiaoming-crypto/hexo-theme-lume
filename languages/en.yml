@@ -3,6 +3,8 @@ nav:
   menu: Menu
   close: Close
   home: Home
+  posts: Posts
+  about: About
   theme: Toggle theme
 
 a11y:
@@ -15,6 +17,16 @@ a11y:
   music: Music player
   random: Surprise me
   travelling: Travelling
+  breadcrumb: Breadcrumb
+  postNav: Post navigation
+  tags: Post tags
+  pagination: Pagination
+
+theme:
+  dark: Switched to dark mode
+  light: Switched to light mode
+  darkAuto: Back to dark (following system)
+  lightAuto: Back to light (following system)
 
 action:
   copy: Copy
@@ -32,6 +44,30 @@ action:
   focusEntered: Wide focus mode enabled
   focusExited: Standard layout restored
 
+home:
+  start: Start reading
+  listen: Listen
+  latestBadge: Latest
+  readThis: Read this
+  latest: Latest posts
+  more: Keep reading
+  since: — now
+  pageOf: "Page %s of %s"
+
+stats:
+  posts: posts
+  categories: categories
+  tags: tags
+  postsCount: "%s posts"
+  categoriesCount: "%s categories"
+  tagsCount: "%s tags"
+  postsShort: "%s posts"
+  unitPost: posts
+
+pager:
+  prev: Previous
+  next: Next
+
 post:
   minutes: min read
   words: words
@@ -42,11 +78,21 @@ post:
   license: License
   comments: Comments
   commentsLoading: Loading comments…
+  commentsError: Comments failed to load. Please refresh and try again.
   pinned: Pinned
   related: Related posts
   series: Series
   tocDrawer: Contents
   outdatedNotice: Last updated {days} days ago ({date}). Some details or versions may be outdated.
+
+reward:
+  title: Buy me a coffee
+  intro: If this post helped you, consider buying me a coffee.
+  open: Support
+  close: Close support dialog
+  methods: Payment methods
+  qr: "%s QR code"
+  note: The QR code is for display only. This site never charges you or collects any payment information.
 
 lightbox:
   label: Image preview
@@ -65,6 +111,8 @@ search:
   emptyHint: Try another keyword, or browse the archive.
   found: posts match
   popular: Popular tags
+  recent: Recent searches
+  clear: Clear
   loading: Loading index…
   hintUpDown: Select
   hintEnter: Open
@@ -75,6 +123,8 @@ archive:
   title: Archive
   all: All posts
   count: Total
+  year: "%s"
+  yearMonth: "%s / %s"
 
 categories:
   title: Categories
@@ -86,10 +136,17 @@ tags:
 
 about:
   eyebrow: About
+  status: Slowly filling up this digital scrapbook
+  paper: About me
 
 music:
   title: Music
   intro: Press play and stay a while.
+  heroTitle: Lend me your ears
+  openPlaylist: Open playlist
+  expandList: Show playlist
+  collapseList: Hide playlist
+  tracks: tracks
   now: Now playing
   play: Play
   pause: Pause
@@ -106,6 +163,7 @@ friends:
   title: Friends
   intro: Neighbours on the internet, all interesting people.
   fishing: Go fishing
+  fishingIntro: Cast a line into the friends' pond and reel in a random good read.
   cast: Cast
   casting: Casting…
   got: You caught
@@ -113,8 +171,20 @@ friends:
   feed: Friend feed
   refresh: Shuffle
   count: friends
+  recommend: Recommended
   visit: Visit
   loading: Fishing for new posts…
+
+ctx:
+  label: Quick menu
+  head: Quick actions
+  openTab: Open in new tab
+  copyLink: Copy link address
+  copySelection: Copy selection
+  chars: chars
+  openImage: Open image in new tab
+  copyImage: Copy image address
+  copyPage: Copy page link
 
 error:
   title: Page not found
@@ -125,3 +195,6 @@ error:
 
 footer:
   toTop: Back to top
+  note: Stay curious, keep building.
+  explore: Explore
+  elsewhere: Elsewhere

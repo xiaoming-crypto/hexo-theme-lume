@@ -28,8 +28,8 @@
     <div class="search-suggest" data-search-suggest-wrap>
       <div class="search-recent" data-search-recent hidden>
         <div class="search-recent__head">
-          <span class="search-suggest__label">最近搜索</span>
-          <button class="search-recent__clear" type="button" data-search-clear-history>清空</button>
+          <span class="search-suggest__label"><%= __('search.recent') %></span>
+          <button class="search-recent__clear" type="button" data-search-clear-history><%= __('search.clear') %></button>
         </div>
         <div class="search-suggest__tags" data-search-recent-list></div>
       </div>
@@ -44,7 +44,7 @@
     <div class="search-results" id="search-overlay-results" data-search-results role="listbox" aria-label="<%= __('search.title') %>"></div>
 
     <div class="search-dialog__foot">
-      <span><kbd>/</kbd> 快速搜索</span>
+      <span><kbd>/</kbd> <%= __('search.shortcut') %></span>
       <span><kbd>↑</kbd><kbd>↓</kbd> <%= __('search.hintUpDown') %></span>
       <span><kbd>↵</kbd> <%= __('search.hintEnter') %></span>
       <span class="search-dialog__count" data-search-count></span>

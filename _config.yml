@@ -222,7 +222,7 @@ about:
   # - 全栈开发
   skills: []
 
-# 评论（默认关闭）。支持 twikoo / giscus。
+# 评论（默认关闭）。支持 twikoo / giscus / waline。
 comments:
   enable: false
   provider: twikoo
@@ -248,6 +248,14 @@ comments:
     inputPosition: "top"
     theme: "preferred_color_scheme"
     lang: "zh-CN"
+  waline:
+    serverURL: ""
+    lang: "zh-CN"
+    css: "https://cdn.jsdelivr.net/npm/@waline/client@3/dist/waline.css"
+    js: "https://cdn.jsdelivr.net/npm/@waline/client@3/dist/waline.umd.js"
+    reaction: false
+    pageview: false
+    comment: false
 
 # 统计（可选）。留空则不注入任何脚本。
 analytics:

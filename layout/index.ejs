@@ -35,19 +35,19 @@
       <% } %>
 
       <div class="hero__actions" data-reveal style="--i: 5">
-        <a class="btn btn--pop" href="#latest">开始阅读 <span aria-hidden="true">→</span></a>
+        <a class="btn btn--pop" href="#latest"><%= __('home.start') %> <span aria-hidden="true">→</span></a>
         <% if (randomPost.enable) { %>
-          <button class="btn btn--ghost" type="button" data-random-post><%- lume_icon('dice') %> 随便逛逛</button>
+          <button class="btn btn--ghost" type="button" data-random-post><%- lume_icon('dice') %> <%= __('a11y.random') %></button>
         <% } %>
         <% if (music.enable) { %>
-          <a class="btn btn--ghost" href="<%= url_for('/music/') %>"><%- lume_icon('headphones') %> 听歌</a>
+          <a class="btn btn--ghost" href="<%= url_for('/music/') %>"><%- lume_icon('headphones') %> <%= __('home.listen') %></a>
         <% } %>
       </div>
 
       <div class="hero__stats" data-reveal style="--i: 6">
-        <span class="hero__stat" style="--tilt: -2deg"><em><%= totalPosts %></em><span>篇文章</span></span>
-        <span class="hero__stat" style="--tilt: 1.5deg"><em><%= totalCategories %></em><span>个分类</span></span>
-        <% if (since) { %><span class="hero__stat" style="--tilt: -1deg"><em><%= since %></em><span>年至今</span></span><% } %>
+        <span class="hero__stat" style="--tilt: -2deg"><em><%= totalPosts %></em><span><%= __('stats.posts') %></span></span>
+        <span class="hero__stat" style="--tilt: 1.5deg"><em><%= totalCategories %></em><span><%= __('stats.categories') %></span></span>
+        <% if (since) { %><span class="hero__stat" style="--tilt: -1deg"><em><%= since %></em><span><%= __('home.since') %></span></span><% } %>
       </div>
     </div>
 
@@ -65,11 +65,11 @@
           </span>
         <% } %>
         <span class="hero-card__meta">
-          <span class="hero-card__badge"><%= Number(featured.sticky) > 0 ? __('post.pinned') : '最新' %></span>
+          <span class="hero-card__badge"><%= Number(featured.sticky) > 0 ? __('post.pinned') : __('home.latestBadge') %></span>
           <time datetime="<%= date_xml(featured.date) %>"><%= date(featured.date, 'YYYY-MM-DD') %></time>
         </span>
         <strong class="hero-card__title"><%= featured.title %></strong>
-        <span class="hero-card__more">读这篇 <span aria-hidden="true">→</span></span>
+        <span class="hero-card__more"><%= __('home.readThis') %> <span aria-hidden="true">→</span></span>
       </a>
       <% } %>
       <span class="hero-sticker hero-sticker--a" aria-hidden="true">✦</span>
@@ -84,14 +84,14 @@
 <header class="page-head">
   <p class="eyebrow">Page <%= String(page.current).padStart(2, '0') %></p>
   <h1><%= config.title %></h1>
-  <p class="page-head__meta">第 <%= page.current %> / <%= page.total %> 页</p>
+  <p class="page-head__meta"><%= __('home.pageOf', page.current, page.total) %></p>
 </header>
 <% } %>
 
 <section class="feed" id="latest" aria-labelledby="latest-title">
   <header class="section-head" data-reveal>
-    <h2 id="latest-title"><%- lume_icon('pen', 'section-head__emoji') %><%= isFirst ? '最新文章' : '继续阅读' %></h2>
-    <span class="section-head__count"><%= totalPosts %> 篇</span>
+    <h2 id="latest-title"><%- lume_icon('pen', 'section-head__emoji') %><%= isFirst ? __('home.latest') : __('home.more') %></h2>
+    <span class="section-head__count"><%= __('stats.postsShort', totalPosts) %></span>
     <span class="section-head__rule" aria-hidden="true"></span>
   </header>
 

@@ -507,6 +507,7 @@ body.reward-open{overflow: hidden;}
 .comments--twikoo .tk-input,.comments--twikoo .tk-textarea{border-radius: 12px !important;border: 2px solid var(--line) !important;background: var(--cream) !important;color: var(--ink) !important;}
 .comments--twikoo .tk-submit .tk-row .tk-col{border-radius: 16px;}
 .comments--twikoo .tk-comment{border-radius: 14px;}
+.comments--waline{--waline-theme-color: var(--accent);--waline-active-color: var(--accent-text);--waline-bgcolor: var(--paper);--waline-bgcolor-light: var(--paper-2);--waline-color: var(--ink);--waline-border-color: var(--border-subtle);}
 .archive,.terms,.term-page,.not-found,.about,.friends-page,.music-page{max-width: 1180px;margin: 0 auto;padding: clamp(30px, 5vw, 64px) 24px 60px;}
 .archive__list{display: grid;gap: 30px;}
 .archive-year{display: grid;grid-template-columns: 120px minmax(0, 1fr);gap: 22px;align-items: start;}

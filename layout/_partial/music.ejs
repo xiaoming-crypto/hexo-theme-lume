@@ -10,14 +10,15 @@
          data-label-pause="<%= __('music.pause') %>"
          data-label-loading="<%= __('music.loading') %>"
          data-label-error="<%= __('music.error') %>"
-         data-label-retry="<%= __('music.retry') %>">
+         data-label-retry="<%= __('music.retry') %>"
+         data-label-tracks="<%= __('music.tracks') %>">
   <header class="music-hero" data-reveal>
     <div class="music-hero__copy">
       <p class="eyebrow"><%- lume_icon('headphones') %> <%= __('music.title') %></p>
-      <h1>把耳朵借给我</h1>
+      <h1><%= __('music.heroTitle') %></h1>
       <p><%= __('music.intro') %></p>
       <% if (m.playlistUrl) { %>
-        <a class="btn btn--ghost" href="<%= m.playlistUrl %>" target="_blank" rel="noopener noreferrer">网易云歌单 <span aria-hidden="true">↗</span></a>
+        <a class="btn btn--ghost" href="<%= m.playlistUrl %>" target="_blank" rel="noopener noreferrer"><%= __('music.openPlaylist') %> <span aria-hidden="true">↗</span></a>
       <% } %>
     </div>
     <div class="music-hero__disc" aria-hidden="true">
@@ -57,8 +58,8 @@
     <div class="music-list-card" data-reveal style="--i: 2">
       <header class="music-list-card__head">
         <h2><%= __('music.playlist') %> <span data-music-count>—</span></h2>
-        <button class="music-list__toggle" type="button" data-music-list-toggle aria-expanded="false" aria-controls="music-list-body">
-          <span data-music-list-toggle-label>展开歌单</span>
+        <button class="music-list__toggle" type="button" data-music-list-toggle data-label-expand="<%= __('music.expandList') %>" data-label-collapse="<%= __('music.collapseList') %>" aria-expanded="false" aria-controls="music-list-body">
+          <span data-music-list-toggle-label><%= __('music.expandList') %></span>
           <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg>
         </button>
       </header>

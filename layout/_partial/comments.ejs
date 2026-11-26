@@ -3,18 +3,27 @@
   const provider = comments.provider || 'giscus';
   const giscus = comments.giscus || {};
   const twikoo = comments.twikoo || {};
-  const hasComments = !!comments.enable && ((provider === 'giscus' && giscus.repo) || (provider === 'twikoo' && twikoo.envId));
+  const waline = comments.waline || {};
+  const hasComments = !!comments.enable && (
+    (provider === 'giscus' && giscus.repo) ||
+    (provider === 'twikoo' && twikoo.envId) ||
+    (provider === 'waline' && waline.serverURL)
+  );
+  const langValue = provider === 'twikoo'
+    ? (twikoo.lang || 'zh-CN')
+    : (provider === 'waline' ? (waline.lang || 'zh-CN') : (giscus.lang || 'zh-CN'));
 %>
 <% if (hasComments) { %>
-<section id="comments" class="comments<%= provider === 'twikoo' ? ' comments--twikoo' : '' %>" data-comments
+<section id="comments" class="comments<%= provider === 'twikoo' ? ' comments--twikoo' : (provider === 'waline' ? ' comments--waline' : '') %>" data-comments
          data-provider="<%= provider %>"
          data-lazyload="<%= comments.lazyload === false ? 'false' : 'true' %>"
          data-env-id="<%= twikoo.envId || '' %>"
          data-region="<%= twikoo.region || '' %>"
-         data-lang="<%= provider === 'twikoo' ? (twikoo.lang || 'zh-CN') : (giscus.lang || 'zh-CN') %>"
+         data-lang="<%= langValue %>"
          data-cdn="<%= twikoo.cdn || '' %>"
          data-visitor="<%= twikoo.visitor ? 'true' : 'false' %>"
          data-label-loading="<%= __('post.commentsLoading') %>"
+         data-label-error="<%= __('post.commentsError') %>"
          data-repo="<%= giscus.repo %>"
          data-repo-id="<%= giscus.repoId %>"
          data-category="<%= giscus.category %>"
@@ -23,7 +32,13 @@
          data-strict="<%= giscus.strict || '0' %>"
          data-reactions-enabled="<%= giscus.reactionsEnabled || '1' %>"
          data-input-position="<%= giscus.inputPosition || 'top' %>"
-         data-theme="<%= giscus.theme || 'preferred_color_scheme' %>">
+         data-theme="<%= giscus.theme || 'preferred_color_scheme' %>"
+         data-server-url="<%= waline.serverURL || '' %>"
+         data-waline-css="<%= waline.css || 'https://cdn.jsdelivr.net/npm/@waline/client@3/dist/waline.css' %>"
+         data-waline-js="<%= waline.js || 'https://cdn.jsdelivr.net/npm/@waline/client@3/dist/waline.umd.js' %>"
+         data-waline-reaction="<%= waline.reaction ? 'true' : 'false' %>"
+         data-waline-pageview="<%= waline.pageview ? 'true' : 'false' %>"
+         data-waline-comment="<%= waline.comment ? 'true' : 'false' %>">
   <h2 class="comments__title"><%- lume_icon('message') %><%= __('post.comments') %></h2>
   <div class="comments__mount" data-comments-mount></div>
 </section>

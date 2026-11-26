@@ -6,7 +6,7 @@
   <header class="page-head">
     <p class="eyebrow">Category</p>
     <h1><%= category %></h1>
-    <p class="page-head__meta"><%= count %> 篇文章<%= page.total > 1 ? ' · 第 ' + page.current + ' / ' + page.total + ' 页' : '' %></p>
+    <p class="page-head__meta"><%= __('stats.postsCount', count) %><%= page.total > 1 ? ' · ' + __('home.pageOf', page.current, page.total) : '' %></p>
   </header>
 
   <div class="entries">

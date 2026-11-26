@@ -208,8 +208,12 @@
       }
     };
     var toastText = matchSystem
-      ? (next === 'dark' ? '已切回深色（跟随系统）' : '已切回浅色（跟随系统）')
-      : (next === 'dark' ? '已切换为深色模式' : '已切换为浅色模式');
+      ? (next === 'dark'
+        ? label('theme-dark-auto', 'Back to dark (following system)')
+        : label('theme-light-auto', 'Back to light (following system)'))
+      : (next === 'dark'
+        ? label('theme-dark', 'Switched to dark mode')
+        : label('theme-light', 'Switched to light mode'));
 
     if (!reduceMotion && flags.ripple && typeof document.startViewTransition === 'function') {
       root.classList.add('theme-vt');
@@ -1837,14 +1841,37 @@
     return twikooPromise;
   }
 
+  var walineInstance = null;
+
+  function destroyWaline() {
+    if (walineInstance && typeof walineInstance.destroy === 'function') {
+      try {
+        walineInstance.destroy();
+      } catch (error) {
+        /* ignore */
+      }
+    }
+    walineInstance = null;
+  }
+
   function initComments() {
     var container = $('[data-comments]');
     if (!container || container.hasAttribute('data-comments-ready')) return;
     var mount = $('[data-comments-mount]', container);
     if (!mount) return;
     container.setAttribute('data-comments-ready', '1');
+    destroyWaline();
 
     var provider = container.getAttribute('data-provider') || 'giscus';
+
+    function showCommentError() {
+      if (!document.body.contains(mount)) return;
+      mount.innerHTML = '';
+      var err = document.createElement('p');
+      err.className = 'comments__error';
+      err.textContent = container.getAttribute('data-label-error') || 'Comments failed to load. Please refresh and try again.';
+      mount.appendChild(err);
+    }
 
     function observeVisitorCount() {
       var wrap = $('[data-visitor-count-wrap]');
@@ -1894,9 +1921,7 @@
               .catch(function () {});
           }
         })
-        .catch(function () {
-          mount.innerHTML = '<p class="comments__error">评论暂时加载失败，请刷新后再试。</p>';
-        });
+        .catch(showCommentError);
     }
 
     function initGiscus() {
@@ -1927,13 +1952,42 @@
       mount.appendChild(script);
     }
 
-    var load = provider === 'twikoo' ? initTwikoo : initGiscus;
+    function initWaline() {
+      var serverURL = container.getAttribute('data-server-url');
+      if (!serverURL) return;
+      var cssUrl = container.getAttribute('data-waline-css') || 'https://cdn.jsdelivr.net/npm/@waline/client@3/dist/waline.css';
+      var jsUrl = container.getAttribute('data-waline-js') || 'https://cdn.jsdelivr.net/npm/@waline/client@3/dist/waline.umd.js';
+      if (cssUrl) loadExternalStyle(cssUrl);
+
+      loadExternalScript(jsUrl)
+        .then(function () {
+          if (!document.body.contains(mount)) return;
+          var walineApi = window.Waline && (typeof window.Waline.init === 'function' ? window.Waline : window.Waline.default);
+          if (!walineApi || typeof walineApi.init !== 'function') {
+            throw new Error('Waline unavailable');
+          }
+          destroyWaline();
+          walineInstance = walineApi.init({
+            el: mount,
+            serverURL: serverURL,
+            path: window.location.pathname,
+            lang: container.getAttribute('data-lang') || 'zh-CN',
+            dark: 'html[data-theme="dark"]',
+            reaction: container.getAttribute('data-waline-reaction') === 'true',
+            pageview: container.getAttribute('data-waline-pageview') === 'true',
+            comment: container.getAttribute('data-waline-comment') === 'true'
+          });
+        })
+        .catch(showCommentError);
+    }
+
+    var load = provider === 'twikoo' ? initTwikoo : (provider === 'waline' ? initWaline : initGiscus);
     var started = false;
 
     if (!mount.childNodes.length) {
       var loading = document.createElement('p');
       loading.className = 'comments__loading';
-      loading.textContent = container.getAttribute('data-label-loading') || '评论加载中…';
+      loading.textContent = container.getAttribute('data-label-loading') || 'Loading comments…';
       mount.appendChild(loading);
     }
 
@@ -2269,7 +2323,7 @@
     if (!searchState.indexPromise) {
       var loading = document.createElement('div');
       loading.className = 'search-loading';
-      loading.textContent = searchState.dialog.getAttribute('data-label-loading') || '正在加载索引…';
+      loading.textContent = searchState.dialog.getAttribute('data-label-loading') || 'Loading index…';
       searchState.results.innerHTML = '';
       searchState.results.appendChild(loading);
     }
@@ -2693,6 +2747,7 @@
 
     function applySwap(parsed, newMain, targetScroll, useVT) {
       updateHead(parsed);
+      destroyWaline();
 
       var main = document.getElementById('main');
       main.innerHTML = newMain.innerHTML;

@@ -15,7 +15,7 @@
   <header class="page-head">
     <p class="eyebrow">Index · Categories</p>
     <h1><%= page.title || __('categories.title') %></h1>
-    <p class="page-head__meta"><%= allCategories.length %> 个分类 · <%= site.posts.length %> 篇文章</p>
+    <p class="page-head__meta"><%= __('stats.categoriesCount', allCategories.length) %> · <%= __('stats.postsCount', site.posts.length) %></p>
   </header>
 
   <% if (page.content && page.content.trim()) { %>
@@ -28,7 +28,7 @@
         <a href="<%= url_for(category.path) %>">
           <span class="term__index" aria-hidden="true"><%= String(index + 1).padStart(2, '0') %></span>
           <span class="term__name"><%= category.name %></span>
-          <span class="term__count"><%= category.length %><span aria-hidden="true"> 篇</span></span>
+          <span class="term__count"><%= category.length %><span aria-hidden="true"> <%= __('stats.unitPost') %></span></span>
           <span class="term__arrow" aria-hidden="true">↗</span>
         </a>
       </li>
@@ -40,7 +40,7 @@
   <header class="page-head">
     <p class="eyebrow">Index · Tags</p>
     <h1><%= page.title || __('tags.title') %></h1>
-    <p class="page-head__meta"><%= allTags.length %> 个标签</p>
+    <p class="page-head__meta"><%= __('stats.tagsCount', allTags.length) %></p>
   </header>
 
   <% if (page.content && page.content.trim()) { %>
