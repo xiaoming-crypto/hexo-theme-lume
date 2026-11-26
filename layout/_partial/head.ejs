@@ -32,61 +32,115 @@
     : (seo.robots || 'index, follow');
 
   const tagList = pd.tags && pd.tags.toArray ? pd.tags.toArray().map(tag => tag.name) : [];
-  const catList = pd.categories && pd.categories.toArray ? pd.categories.toArray().map(cat => cat.name) : [];
+  const catObjects = pd.categories && pd.categories.toArray ? pd.categories.toArray() : [];
+  const catList = catObjects.map(cat => cat.name);
+  const langCode = config.language || 'zh-CN';
   const keywords = []
     .concat(pd.keywords || [], tagList, seo.keywords ? [seo.keywords] : [])
     .filter(Boolean)
     .join(', ');
 
   const isPost = layout === 'post';
+  const isAbout = pd.type === 'about';
+  const isHomeFirst = (!layout || layout === 'index') && (!pd.current || pd.current === 1);
+  const isCollection = !!(
+    pd.archive ||
+    typeof pd.category === 'string' ||
+    typeof pd.tag === 'string' ||
+    ((!layout || layout === 'index') && pd.current > 1)
+  );
   const isoDate = pd.date ? (pd.date.toISOString ? pd.date.toISOString() : pd.date) : '';
   const isoUpdated = pd.updated ? (pd.updated.toISOString ? pd.updated.toISOString() : pd.updated) : isoDate;
   const authorName = pd.author || config.author || config.title;
-  const locale = String(config.language || 'zh-CN').replace('-', '_');
+  const locale = String(langCode).replace('-', '_');
   const siteUrl = full_url_for('/');
 
   const socialImage = ogImage ? [ogImage] : undefined;
 
   let graph;
   if (isPost) {
+    const words = lume_word_count(pd.content || '');
+    const minutes = lume_reading_time(pd.content || '');
     graph = {
       '@context': 'https://schema.org',
       '@type': 'BlogPosting',
       headline: pd.title || pageTitle,
       description: description,
+      inLanguage: langCode,
       datePublished: isoDate,
       dateModified: isoUpdated,
-      author: { '@type': 'Person', name: authorName },
+      wordCount: words,
+      timeRequired: 'PT' + minutes + 'M',
+      author: { '@type': 'Person', name: authorName, url: siteUrl },
       image: socialImage,
       articleSection: catList.length ? catList[0] : undefined,
       url: canonical,
       mainEntityOfPage: { '@type': 'WebPage', '@id': canonical },
+      isPartOf: { '@type': 'WebSite', name: config.title, url: siteUrl },
       publisher: { '@type': 'Organization', name: config.title, url: siteUrl }
     };
     if (keywords) graph.keywords = keywords;
     if (!socialImage) delete graph.image;
 
+    const breadcrumbItems = [
+      { '@type': 'ListItem', position: 1, name: config.title, item: siteUrl }
+    ];
+    if (catObjects.length) {
+      breadcrumbItems.push({
+        '@type': 'ListItem',
+        position: 2,
+        name: catObjects[0].name,
+        item: full_url_for(catObjects[0].path)
+      });
+    }
+    breadcrumbItems.push({
+      '@type': 'ListItem',
+      position: breadcrumbItems.length + 1,
+      name: pd.title || pageTitle,
+      item: canonical
+    });
+
     const breadcrumb = {
       '@context': 'https://schema.org',
       '@type': 'BreadcrumbList',
-      itemListElement: [
-        { '@type': 'ListItem', position: 1, name: config.title, item: siteUrl },
-        { '@type': 'ListItem', position: 2, name: pd.title || pageTitle, item: canonical }
-      ]
+      itemListElement: breadcrumbItems
     };
     graph = [graph, breadcrumb];
-  } else if (!layout || layout === 'index') {
+  } else if (isHomeFirst) {
     graph = {
       '@context': 'https://schema.org',
       '@type': 'WebSite',
       name: config.title,
       url: siteUrl,
-      description: description,
-      potentialAction: {
+      inLanguage: langCode,
+      description: description
+    };
+    if (!theme.search || theme.search.enable !== false) {
+      graph.potentialAction = {
         '@type': 'SearchAction',
-        target: full_url_for('search/') + '?q={search_term_string}',
+        target: siteUrl + '?q={search_term_string}',
         'query-input': 'required name=search_term_string'
-      }
+      };
+    }
+  } else if (isCollection) {
+    graph = {
+      '@context': 'https://schema.org',
+      '@type': 'CollectionPage',
+      name: pageTitle,
+      description: description,
+      inLanguage: langCode,
+      url: canonical,
+      isPartOf: { '@type': 'WebSite', name: config.title, url: siteUrl }
+    };
+  } else if (isAbout) {
+    graph = {
+      '@context': 'https://schema.org',
+      '@type': 'ProfilePage',
+      name: pageTitle,
+      description: description,
+      inLanguage: langCode,
+      url: canonical,
+      isPartOf: { '@type': 'WebSite', name: config.title, url: siteUrl }
     };
   } else {
     graph = {
@@ -94,6 +148,7 @@
       '@type': 'WebPage',
       name: pageTitle,
       description: description,
+      inLanguage: langCode,
       url: canonical,
       isPartOf: { '@type': 'WebSite', name: config.title, url: siteUrl }
     };
@@ -104,9 +159,11 @@
 <meta data-managed-meta name="author" content="<%= authorName %>">
 <meta data-managed-meta name="robots" content="<%= robots %>">
 <link data-managed-meta rel="canonical" href="<%= canonical %>">
+<% if (pd.prev && typeof pd.prev_link === 'string') { %><link data-managed-meta rel="prev" href="<%= full_url_for(pd.prev_link || '/') %>"><% } %>
+<% if (pd.next && pd.next_link) { %><link data-managed-meta rel="next" href="<%= full_url_for(pd.next_link) %>"><% } %>
 <% if (keywords) { %><meta data-managed-meta name="keywords" content="<%= keywords %>"><% } %>
 
-<meta data-managed-meta property="og:type" content="<%= isPost ? 'article' : 'website' %>">
+<meta data-managed-meta property="og:type" content="<%= isPost ? 'article' : (isAbout ? 'profile' : 'website') %>">
 <meta data-managed-meta property="og:title" content="<%= heading || pageTitle %>">
 <meta data-managed-meta property="og:description" content="<%= description %>">
 <meta data-managed-meta property="og:url" content="<%= canonical %>">
@@ -129,11 +186,13 @@
 <meta data-managed-meta name="twitter:description" content="<%= description %>">
 <% if (ogImage) { %><meta data-managed-meta name="twitter:image" content="<%= ogImage %>"><% } %>
 
-<meta name="theme-color" media="(prefers-color-scheme: light)" content="#f7f4ee">
-<meta name="theme-color" media="(prefers-color-scheme: dark)" content="#101114">
+<meta name="referrer" content="strict-origin-when-cross-origin">
+<meta name="theme-color" media="(prefers-color-scheme: light)" content="#fff6e9">
+<meta name="theme-color" media="(prefers-color-scheme: dark)" content="#171326">
 
 <% if (theme.favicon) { %><link rel="icon" href="<%= url_for(theme.favicon) %>"><% } %>
 <% if (theme.appleTouchIcon) { %><link rel="apple-touch-icon" href="<%= url_for(theme.appleTouchIcon) %>"><% } %>
+<% if (theme.manifest) { %><link rel="manifest" href="<%= url_for(theme.manifest) %>"><% } %>
 <% if (theme.rss) { %><link rel="alternate" type="application/atom+xml" title="<%= config.title %>" href="<%= url_for(theme.rss) %>"><% } %>
 
 <script data-managed-meta type="application/ld+json"><%- JSON.stringify(graph).replace(/<\//g, '<\\/') %></script>

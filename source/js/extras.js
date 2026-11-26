@@ -574,6 +574,7 @@
     if (panel) panel.setAttribute('aria-hidden', open ? 'false' : 'true');
     var toggle = $('[data-music-toggle]', capsule);
     if (toggle) toggle.setAttribute('aria-expanded', open ? 'true' : 'false');
+    if (open && !music.loaded && !music.loading) loadPlaylist();
   }
 
   function initMusicPage() {
@@ -600,7 +601,21 @@
     var audio = ensureAudio();
     syncPlaying(!audio.paused);
 
-    if (!music.loaded && !music.loading) loadPlaylist();
+    if (!$('[data-music-page]')) {
+      var cached = readPlaylistCache();
+      if (cached) {
+        loadPlaylist();
+      } else {
+        var deferLoad = function () {
+          if (!music.loaded && !music.loading) loadPlaylist();
+        };
+        if (typeof window.requestIdleCallback === 'function') {
+          window.requestIdleCallback(deferLoad, { timeout: 3500 });
+        } else {
+          window.setTimeout(deferLoad, 1500);
+        }
+      }
+    }
 
     document.addEventListener('click', function (event) {
       var target = event.target;
@@ -760,21 +775,35 @@
   ============================================================= */
   var randomIndex = null;
 
+  function postsIndexUrl() {
+    return root.getAttribute('data-posts-index') || '/posts.json';
+  }
+
   function searchIndexUrl() {
     var dialog = $('[data-search-dialog]');
     return (dialog && dialog.getAttribute('data-index')) || '/search.json';
   }
 
-  function loadRandomIndex() {
-    if (randomIndex) return Promise.resolve(randomIndex);
-    return fetch(searchIndexUrl(), { credentials: 'same-origin' })
+  function fetchPostList(url) {
+    return fetch(url, { credentials: 'same-origin' })
       .then(function (response) {
         if (!response.ok) throw new Error('HTTP ' + response.status);
         return response.json();
       })
       .then(function (data) {
-        randomIndex = Array.isArray(data) ? data.filter(function (item) { return item && item.url; }) : [];
-        return randomIndex;
+        return Array.isArray(data) ? data.filter(function (item) { return item && item.url; }) : [];
+      });
+  }
+
+  function loadRandomIndex() {
+    if (randomIndex) return Promise.resolve(randomIndex);
+    return fetchPostList(postsIndexUrl())
+      .catch(function () {
+        return fetchPostList(searchIndexUrl());
+      })
+      .then(function (list) {
+        randomIndex = list;
+        return list;
       });
   }
 
@@ -785,7 +814,18 @@
           window.location.href = '/';
           return;
         }
-        var post = list[Math.floor(Math.random() * list.length)];
+        var currentPath = window.location.pathname;
+        var pool = list.length > 1
+          ? list.filter(function (item) {
+              try {
+                return new URL(item.url, window.location.origin).pathname !== currentPath;
+              } catch (error) {
+                return true;
+              }
+            })
+          : list;
+        var choices = pool.length ? pool : list;
+        var post = choices[Math.floor(Math.random() * choices.length)];
         if (window.Lume && typeof window.Lume.navigate === 'function') {
           window.Lume.navigate(post.url);
         } else {

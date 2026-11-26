@@ -2,6 +2,31 @@
   const f = theme.footer || {};
   const social = theme.social || [];
   const posts = site.posts.toArray ? site.posts.toArray() : (site.posts.data || []);
+  const pages = site.pages && site.pages.toArray ? site.pages.toArray() : (site.pages && site.pages.data ? site.pages.data : []);
+  const hasPage = function (typeName, slug) {
+    return pages.some(function (p) {
+      const pType = String(p.type || '');
+      const pPath = String(p.path || '').replace(/^\/+|index\.html$/g, '').replace(/\/+$/, '');
+      return (typeName && pType === typeName) || (slug && pPath === slug);
+    });
+  };
+  let exploreLinks = [];
+  if (Array.isArray(f.links) && f.links.length) {
+    exploreLinks = f.links.filter(function (item) { return item && item.label && item.path; });
+  } else {
+    if (posts.length) exploreLinks.push({ label: '全部文章', path: '/archives/' });
+    if (hasPage('categories', 'categories')) exploreLinks.push({ label: '分类', path: '/categories/' });
+    if (hasPage('tags', 'tags')) exploreLinks.push({ label: '标签', path: '/tags/' });
+    if (hasPage('link', 'link') || hasPage('friends', 'friends')) {
+      exploreLinks.push({ label: '友链', path: hasPage('friends', 'friends') && !hasPage('link', 'link') ? '/friends/' : '/link/' });
+    }
+    if (theme.music && theme.music.enable && hasPage('music', 'music')) {
+      exploreLinks.push({ label: '音乐', path: '/music/' });
+    }
+    if (exploreLinks.length < 5 && hasPage('about', 'about')) {
+      exploreLinks.push({ label: '关于', path: '/about/' });
+    }
+  }
   const years = posts.map(function (p) { return p.date.format('YYYY'); }).sort();
   const since = f.since || (years.length ? years[0] : '');
   const now = new Date().getFullYear();
@@ -30,14 +55,15 @@
     </div>
 
     <div class="footer__cols">
+      <% if (exploreLinks.length) { %>
       <div class="footer__col">
         <h3>逛一逛</h3>
-        <a href="<%= url_for('/archives/') %>">全部文章</a>
-        <a href="<%= url_for('/categories/') %>">分类</a>
-        <a href="<%= url_for('/tags/') %>">标签</a>
-        <a href="<%= url_for('/link/') %>">友链</a>
-        <a href="<%= url_for('/music/') %>">音乐</a>
+        <% exploreLinks.forEach(function (item) { %>
+          <% const isExternal = /^(https?:)?\/\//i.test(String(item.path || '')) || String(item.path || '').indexOf('mailto:') === 0; %>
+          <a href="<%= isExternal ? item.path : url_for(item.path) %>"<% if (isExternal) { %> target="_blank" rel="noopener noreferrer"<% } %>><%= item.label %></a>
+        <% }); %>
       </div>
+      <% } %>
       <div class="footer__col">
         <h3>在这里</h3>
         <% social.forEach(function (item) { %>

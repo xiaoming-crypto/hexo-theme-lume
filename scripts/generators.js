@@ -70,10 +70,22 @@ hexo.extend.generator.register('lume', function (locals) {
       };
     });
 
+  const postsLite = index.map(item => ({
+    title: item.title,
+    url: item.url,
+    date: item.date,
+    categories: item.categories,
+    tags: item.tags,
+  }));
+
   const routes = [
     {
       path: 'search.json',
       data: JSON.stringify(index),
+    },
+    {
+      path: 'posts.json',
+      data: JSON.stringify(postsLite),
     },
   ];
 

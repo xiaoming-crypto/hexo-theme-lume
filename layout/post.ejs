@@ -61,8 +61,11 @@
       <% if (postOptions.showWordCount !== false) { %>
         <span class="post-meta__item"><%= words %> <%= __('post.words') %></span>
       <% } %>
-      <% if (hasComments && twikoo.count !== false) { %>
+      <% if (hasComments && provider === 'twikoo' && twikoo.count !== false) { %>
         <span class="post-meta__item" data-comment-count-wrap hidden><span aria-hidden="true">💬</span><span data-comment-count>0</span></span>
+      <% } %>
+      <% if (hasComments && provider === 'twikoo' && twikoo.visitor) { %>
+        <span class="post-meta__item" data-visitor-count-wrap hidden><span aria-hidden="true">👁</span><span id="twikoo_visitors" data-visitor-count></span></span>
       <% } %>
     </div>
   </header>

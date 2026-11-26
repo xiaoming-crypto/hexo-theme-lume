@@ -84,10 +84,18 @@
     );
   }
 
+  function syncThemeColor(theme) {
+    var color = theme === 'dark' ? '#171326' : '#fff6e9';
+    $$('meta[name="theme-color"]').forEach(function (meta) {
+      meta.setAttribute('content', color);
+    });
+  }
+
   function setTheme(theme, silent) {
     root.setAttribute('data-theme', theme);
     root.style.colorScheme = theme;
     syncThemeButton(theme);
+    syncThemeColor(theme);
     if (!silent) storeTheme(theme);
     syncGiscus(theme);
   }
@@ -144,6 +152,7 @@
   function initTheme() {
     var button = $('[data-theme-toggle]');
     syncThemeButton(currentTheme());
+    syncThemeColor(currentTheme());
     if (button) {
       button.addEventListener('click', toggleTheme);
     }
@@ -772,6 +781,25 @@
 
     var provider = container.getAttribute('data-provider') || 'giscus';
 
+    function observeVisitorCount() {
+      var wrap = $('[data-visitor-count-wrap]');
+      var countNode = document.getElementById('twikoo_visitors');
+      if (!wrap || !countNode) return;
+
+      var reveal = function () {
+        var text = (countNode.textContent || '').trim();
+        if (!/^\d+$/.test(text)) return false;
+        wrap.removeAttribute('hidden');
+        return true;
+      };
+
+      if (reveal() || !('MutationObserver' in window)) return;
+      var observer = new window.MutationObserver(function () {
+        if (reveal()) observer.disconnect();
+      });
+      observer.observe(countNode, { childList: true, characterData: true, subtree: true });
+    }
+
     function initTwikoo() {
       var envId = container.getAttribute('data-env-id');
       if (!envId) return;
@@ -780,6 +808,7 @@
 
       loadTwikooScript(container.getAttribute('data-cdn'))
         .then(function (twikoo) {
+          observeVisitorCount();
           twikoo.init({
             envId: envId,
             el: mount,
@@ -1505,18 +1534,15 @@
     });
   }
 
-  function dropStaleServiceWorker() {
-    if (!('serviceWorker' in navigator)) return;
-    navigator.serviceWorker
-      .getRegistrations()
-      .then(function (registrations) {
-        registrations.forEach(function (registration) {
-          registration.unregister();
-        });
-      })
-      .catch(function () {
-        /* ignore */
-      });
+  function checkInitialSearchQuery() {
+    if (!searchState.dialog || !window.location.search) return;
+    try {
+      var params = new window.URLSearchParams(window.location.search);
+      var query = (params.get('q') || '').trim();
+      if (query) openSearch(query);
+    } catch (error) {
+      /* ignore */
+    }
   }
 
   function initHeroSnap() {
@@ -1560,7 +1586,6 @@
   }
 
   function boot() {
-    dropStaleServiceWorker();
     initTheme();
     initScroll();
     initReveal(document);
@@ -1576,6 +1601,7 @@
       window.LumeExtras.boot();
     }
     initPage();
+    checkInitialSearchQuery();
   }
 
   if (document.readyState === 'loading') {

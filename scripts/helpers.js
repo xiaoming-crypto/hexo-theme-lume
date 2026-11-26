@@ -5,7 +5,19 @@
  * Text utilities shared by templates and the search index generator.
  */
 
+const fs = require('fs');
+const path = require('path');
 const util = require('hexo-util');
+
+const THEME_VERSION = (() => {
+  try {
+    const pkgPath = path.join(__dirname, '..', 'package.json');
+    const pkg = JSON.parse(fs.readFileSync(pkgPath, 'utf8'));
+    return pkg && pkg.version ? String(pkg.version) : '0.17.0';
+  } catch (error) {
+    return '0.17.0';
+  }
+})();
 
 const stripHTML =
   util.stripHTML ||
@@ -66,4 +78,8 @@ hexo.extend.helper.register('lume_excerpt', function (post, length) {
       .replace(/[\s,，。、；;：:·\-—]+$/g, '')
       .trim() + '…'
   );
+});
+
+hexo.extend.helper.register('lume_version', function () {
+  return THEME_VERSION;
 });

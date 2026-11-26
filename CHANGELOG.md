@@ -2,6 +2,26 @@
 
 Lume 的版本号按对话轮次递增：每完成一轮迭代，次版本号 +1（`0.x`）。第一个公开版本为 `0.13.0`。
 
+## 0.17.0 — 2026-11-26
+
+这一轮聚焦底座排雷、SEO 纠偏与首屏性能止血，补齐未落地配置项并消除升级缓存与死链隐患。
+
+### 修复
+
+- 修复首页 JSON-LD `SearchAction` 指向不存在的 `/search/` 路由死链问题，改为 `/?q={search_term_string}` 并在打开带 `?q=` 参数的 URL 时自动唤起搜索浮层。
+- 修复 `<meta name="theme-color">` 写死旧版色值且不随用户切换主题同步的问题，改用 `#fff6e9` / `#171326` 并在明暗切换时实时同步。
+- 修复评论开启 `twikoo.visitor` 后文章元数据栏未输出浏览量的问题，并限制评论数占位仅在 Twikoo 模式下输出。
+- 修复页脚「逛一逛」固定写死 `/link/`、`/music/` 可能导致未启用站点产生 404 的问题，改为按实际页面与配置动态生成（新增 `footer.links` 自定义配置）。
+- 移除会无条件注销站点所有 Service Worker 的残留逻辑，避免干扰自主配置的 PWA。
+- 修复文章元信息胶囊因 `display: inline-flex` 覆盖 `[hidden]` 导致空计数占位显露的问题，并清除胶囊内残留的 `/` 分隔符。
+
+### 优化与 SEO
+
+- 文章 `BlogPosting` JSON-LD 补充 `wordCount`、`timeRequired`、`inLanguage` 与 `author.url`，`BreadcrumbList` 补齐中间分类层级。
+- 分页与集合页补充 `rel="prev"` / `rel="next"` 与 `CollectionPage` JSON-LD，关于页补充 `ProfilePage` JSON-LD；新增原生 `manifest` 配置项与 `referrer` 元标签。
+- 新增轻量索引 `posts.json` 供「随便逛逛」使用并排除当前页；音乐胶囊歌单在无本地缓存时改为页面空闲后懒加载。
+- 主题 CSS/JS 资源追加 `?v=<version>` 版本查询参数，防止升级后命中旧缓存。
+
 ## 0.16.0 — 2026-11-26
 
 移除文章与页面标题悬停时显示的 `#` 锚点符号，避免与标题首字及二级标题装饰竖条重叠，目录（TOC）与锚点跳转不受影响。

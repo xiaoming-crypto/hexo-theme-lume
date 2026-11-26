@@ -6,10 +6,12 @@
   const brandColor = theme.accent || '#f5822a';
   const brandDark = theme.accentDark || brandColor;
   const selection = (theme.color && theme.color.textSelection) || '#ffd166';
+  const assetVer = lume_version();
 %>
 <!DOCTYPE html>
 <html lang="<%= config.language || 'zh-CN' %>" class="no-js" data-theme="light"
       data-scheme="<%= theme.scheme || 'auto' %>"
+      data-posts-index="<%= url_for('/posts.json') %>"
       data-router="<%= flag(motion.pageTransitions) %>"
       data-reveal-motion="<%= flag(motion.reveal) %>"
       data-parallax="<%= flag(motion.heroParallax) %>"
@@ -45,10 +47,10 @@
     })();
   </script>
   <%- partial('_partial/head', { pageData: pageData }) %>
-  <link rel="stylesheet" href="<%= url_for('/css/main.css') %>">
-  <link rel="stylesheet" href="<%= url_for('/css/pop.css') %>">
-  <script defer src="<%= url_for('/js/extras.js') %>"></script>
-  <script defer src="<%= url_for('/js/app.js') %>"></script>
+  <link rel="stylesheet" href="<%= url_for('/css/main.css') %>?v=<%= assetVer %>">
+  <link rel="stylesheet" href="<%= url_for('/css/pop.css') %>?v=<%= assetVer %>">
+  <script defer src="<%= url_for('/js/extras.js') %>?v=<%= assetVer %>"></script>
+  <script defer src="<%= url_for('/js/app.js') %>?v=<%= assetVer %>"></script>
 </head>
 <body class="layout-<%= layoutName %>">
   <a class="skip-link" href="#main"><%= __('a11y.skip') %></a>

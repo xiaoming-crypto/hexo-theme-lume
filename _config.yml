@@ -147,6 +147,8 @@ footer:
   note: ""
   # 起始年份，如 2024；留空则自动取最早文章年份
   since: ""
+  # 「逛一逛」栏自定义链接，留空时按站点已有页面自动生成；示例：[{ label: 全部文章, path: /archives/ }]
+  links: []
   poweredBy: true
   # 页脚右侧附加说明，可留空
   license: ""
@@ -166,6 +168,8 @@ rss: ""
 # 站点图标
 favicon: ""
 appleTouchIcon: ""
+# PWA / 站点图标清单路径，例如 "/img/siteicon/site.webmanifest"
+manifest: ""
 
 # SEO
 seo:
