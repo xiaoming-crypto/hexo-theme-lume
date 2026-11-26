@@ -1539,23 +1539,7 @@ a.pager__step:hover {
 }
 
 .headerlink {
-  margin-left: 0.3em;
-  color: var(--accent) !important;
-  text-decoration: none !important;
-  opacity: 0;
-  transition: opacity var(--dur-2) var(--ease);
-}
-
-.headerlink::before {
-  content: "#";
-  font-family: var(--font-mono);
-  font-size: 0.7em;
-}
-
-.post-body h2:hover .headerlink,
-.post-body h3:hover .headerlink,
-.post-body h4:hover .headerlink {
-  opacity: 0.75;
+  display: none;
 }
 
 .toc,

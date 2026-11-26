@@ -1630,19 +1630,8 @@ html[data-theme="dark"] .pager__pages .is-current {
   vertical-align: 0.02em;
 }
 
-.post-body h2 .headerlink,
-.post-body h3 .headerlink {
-  /* 锚点 # 脱离文档流，避免占位把居中标题挤偏。 */
-  position: absolute;
-  opacity: 0;
-  margin-left: 8px;
-  text-decoration: none;
-  transition: opacity var(--dur-1) var(--ease);
-}
-
-.post-body h2:hover .headerlink,
-.post-body h3:hover .headerlink {
-  opacity: 0.45;
+.post-body .headerlink {
+  display: none;
 }
 
 .post-body h3 {
