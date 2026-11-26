@@ -55,26 +55,29 @@
 
     <div class="post-meta" data-reveal style="--i: 3">
       <span class="post-meta__item">
-        <span aria-hidden="true">🗓</span>
+        <%- lume_icon('calendar') %>
         <time datetime="<%= date_xml(post.date) %>"><%= date(post.date, 'YYYY-MM-DD') %></time>
       </span>
       <% if (updated && postOptions.showUpdated !== false) { %>
         <span class="post-meta__item"><%= __('post.updated') %> <time datetime="<%= date_xml(post.updated) %>"><%= date(post.updated, 'YYYY-MM-DD') %></time></span>
       <% } %>
       <% if (postOptions.showReadingTime !== false) { %>
-        <span class="post-meta__item"><span aria-hidden="true">☕</span><%= minutes %> <%= __('post.minutes') %></span>
+        <span class="post-meta__item"><%- lume_icon('clock') %><%= minutes %> <%= __('post.minutes') %></span>
       <% } %>
       <% if (postOptions.showWordCount !== false) { %>
         <span class="post-meta__item"><%= words %> <%= __('post.words') %></span>
       <% } %>
       <% if (hasComments && provider === 'twikoo' && twikoo.count !== false) { %>
-        <span class="post-meta__item" data-comment-count-wrap hidden><span aria-hidden="true">💬</span><span data-comment-count>0</span></span>
+        <span class="post-meta__item" data-comment-count-wrap hidden><%- lume_icon('message') %><span data-comment-count>0</span></span>
       <% } %>
       <% if (hasComments && provider === 'twikoo' && twikoo.visitor) { %>
-        <span class="post-meta__item" data-visitor-count-wrap hidden><span aria-hidden="true">👁</span><span id="twikoo_visitors" data-visitor-count></span></span>
+        <span class="post-meta__item" data-visitor-count-wrap hidden><%- lume_icon('eye') %><span id="twikoo_visitors" data-visitor-count></span></span>
       <% } %>
       <button class="post-meta__item post-share-btn" type="button" data-copy-link aria-label="<%= __('action.copyLink') %>">
-        <span aria-hidden="true">🔗</span><span data-copy-link-label><%= __('action.copyLink') %></span>
+        <%- lume_icon('link') %><span data-copy-link-label><%= __('action.copyLink') %></span>
+      </button>
+      <button class="post-meta__item post-focus-btn" type="button" data-reading-focus aria-pressed="false" aria-label="<%= __('action.focusMode') %>">
+        <%- lume_icon('expand', 'post-focus-btn__ico-on') %><%- lume_icon('shrink', 'post-focus-btn__ico-off') %><span data-reading-focus-label><%= __('action.focusMode') %></span>
       </button>
     </div>
   </header>
@@ -99,7 +102,7 @@
 
       <% if (showOutdated) { %>
       <aside class="post-outdated" data-outdated-days="<%= outdatedDays %>" data-post-updated="<%= date_xml(post.updated || post.date) %>" data-post-date-label="<%= date(post.updated || post.date, 'YYYY-MM-DD') %>" data-outdated-template="<%= __('post.outdatedNotice') %>" role="note" hidden>
-        <span class="post-outdated__icon" aria-hidden="true">⏳</span>
+        <span class="post-outdated__icon" aria-hidden="true"><%- lume_icon('hourglass') %></span>
         <p class="post-outdated__text" data-outdated-text></p>
       </aside>
       <% } %>
@@ -107,7 +110,7 @@
       <% if (seriesPosts.length > 1) { %>
       <details class="post-series" open>
         <summary>
-          <span class="post-series__title">📚 <%= __('post.series') %> · <%= post.series %></span>
+          <span class="post-series__title"><%- lume_icon('layers') %> <%= __('post.series') %> · <%= post.series %></span>
           <span class="post-series__count"><%= (seriesIndex >= 0 ? seriesIndex + 1 : 1) %> / <%= seriesPosts.length %></span>
         </summary>
         <ol class="post-series__list">
@@ -161,7 +164,7 @@
           <p><%= rewardConf.intro || '如果这篇内容帮到了你，可以请我喝杯咖啡。' %></p>
         </div>
         <button class="btn btn--pop reward__open" type="button" data-reward-open aria-haspopup="dialog">
-          打赏一下 <span aria-hidden="true">♥</span>
+          打赏一下 <%- lume_icon('heart') %>
         </button>
       </section>
 
@@ -193,7 +196,7 @@
             <% }); %>
           </div>
 
-          <p class="reward-modal__note"><span aria-hidden="true">🔒</span><%= rewardConf.note || '扫码仅用于展示收款码，本站不会发起扣款，也不会收集任何支付信息。' %></p>
+          <p class="reward-modal__note"><%- lume_icon('lock') %><%= rewardConf.note || '扫码仅用于展示收款码，本站不会发起扣款，也不会收集任何支付信息。' %></p>
         </div>
       </dialog>
       <% } %>
@@ -218,7 +221,7 @@
 
       <% if (relatedPosts.length) { %>
       <section class="related-posts" aria-labelledby="related-title" data-reveal>
-        <h2 class="related-posts__title" id="related-title"><span aria-hidden="true">✨</span><%= __('post.related') %></h2>
+        <h2 class="related-posts__title" id="related-title"><%- lume_icon('sparkles') %><%= __('post.related') %></h2>
         <div class="related-grid">
           <% relatedPosts.forEach(function (rel) { %>
             <% const relCats = (rel.categories && rel.categories.toArray) ? rel.categories.toArray() : []; %>
@@ -228,7 +231,7 @@
                 <% if (relCats.length) { %><span class="related-card__cat"><%= relCats[0].name %></span><% } %>
               </span>
               <strong class="related-card__title"><%= rel.title %></strong>
-              <span class="related-card__read">☕ <%= lume_reading_time(rel.content) %> <%= __('post.minutes') %></span>
+              <span class="related-card__read"><%- lume_icon('clock') %> <%= lume_reading_time(rel.content) %> <%= __('post.minutes') %></span>
             </a>
           <% }); %>
         </div>

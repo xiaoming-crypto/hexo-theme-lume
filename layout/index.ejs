@@ -37,10 +37,10 @@
       <div class="hero__actions" data-reveal style="--i: 5">
         <a class="btn btn--pop" href="#latest">开始阅读 <span aria-hidden="true">→</span></a>
         <% if (randomPost.enable) { %>
-          <button class="btn btn--ghost" type="button" data-random-post>🎲 随便逛逛</button>
+          <button class="btn btn--ghost" type="button" data-random-post><%- lume_icon('dice') %> 随便逛逛</button>
         <% } %>
         <% if (music.enable) { %>
-          <a class="btn btn--ghost" href="<%= url_for('/music/') %>">🎧 听歌</a>
+          <a class="btn btn--ghost" href="<%= url_for('/music/') %>"><%- lume_icon('headphones') %> 听歌</a>
         <% } %>
       </div>
 
@@ -90,7 +90,7 @@
 
 <section class="feed" id="latest" aria-labelledby="latest-title">
   <header class="section-head" data-reveal>
-    <h2 id="latest-title"><span class="section-head__emoji" aria-hidden="true">✍️</span><%= isFirst ? '最新文章' : '继续阅读' %></h2>
+    <h2 id="latest-title"><%- lume_icon('pen', 'section-head__emoji') %><%= isFirst ? '最新文章' : '继续阅读' %></h2>
     <span class="section-head__count"><%= totalPosts %> 篇</span>
     <span class="section-head__rule" aria-hidden="true"></span>
   </header>

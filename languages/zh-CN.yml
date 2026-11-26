@@ -27,6 +27,10 @@ action:
   collapseCode: 收起代码
   copyLink: 复制链接
   linkCopied: 文章链接已复制
+  focusMode: 专注阅读
+  exitFocus: 退出专注
+  focusEntered: 已进入宽屏专注阅读
+  focusExited: 已恢复标准双栏布局
 
 post:
   minutes: 分钟阅读

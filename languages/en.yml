@@ -27,6 +27,10 @@ action:
   collapseCode: Collapse
   copyLink: Copy link
   linkCopied: Post link copied
+  focusMode: Focus mode
+  exitFocus: Exit focus
+  focusEntered: Wide focus mode enabled
+  focusExited: Standard layout restored
 
 post:
   minutes: min read

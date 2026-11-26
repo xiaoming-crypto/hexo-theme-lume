@@ -1535,7 +1535,7 @@
 
     if (!link && image && image.src) {
       items.push(
-        menuItem('在新标签页查看图片', '🖼', '', function () {
+        menuItem('在新标签页查看图片', '⊞', '', function () {
           window.open(image.src, '_blank', 'noopener');
         }),
         menuItem('复制图片地址', '⧉', '', function (button) {

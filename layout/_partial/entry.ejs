@@ -16,7 +16,7 @@
 
     <span class="entry__body">
       <span class="entry__meta">
-        <% if (isSticky) { %><span class="entry__pin">📌 <%= __('post.pinned') %></span><% } %>
+        <% if (isSticky) { %><span class="entry__pin"><%- lume_icon('pin') %> <%= __('post.pinned') %></span><% } %>
         <time datetime="<%= date_xml(post.date) %>"><%= date(post.date, 'YYYY-MM-DD') %></time>
         <% if (primaryCategory) { %>
           <span class="entry__dot" aria-hidden="true">·</span>

@@ -1371,6 +1371,108 @@
     });
   }
 
+  function initTabs() {
+    $$('[data-tabs]').forEach(function (group) {
+      if (group.hasAttribute('data-tabs-ready')) return;
+      group.setAttribute('data-tabs-ready', '1');
+
+      var tabs = $$('[role="tab"]', group);
+      var panels = $$('[role="tabpanel"]', group);
+      var syncKey = group.getAttribute('data-tabs-sync') || '';
+
+      var activate = function (idx, syncPeers) {
+        if (idx < 0 || idx >= tabs.length) return;
+        tabs.forEach(function (tab, i) {
+          var active = i === idx;
+          tab.setAttribute('aria-selected', active ? 'true' : 'false');
+          tab.setAttribute('tabindex', active ? '0' : '-1');
+        });
+        panels.forEach(function (panel, i) {
+          panel.hidden = i !== idx;
+        });
+
+        if (syncPeers && syncKey) {
+          $$('[data-tabs-sync]').forEach(function (peer) {
+            if (peer === group || peer.getAttribute('data-tabs-sync') !== syncKey) return;
+            if (typeof peer._activateTab === 'function') peer._activateTab(idx, false);
+          });
+        }
+      };
+
+      group._activateTab = activate;
+
+      tabs.forEach(function (tab, idx) {
+        tab.addEventListener('click', function () {
+          activate(idx, true);
+        });
+        tab.addEventListener('keydown', function (event) {
+          var next = -1;
+          if (event.key === 'ArrowRight') next = (idx + 1) % tabs.length;
+          else if (event.key === 'ArrowLeft') next = (idx - 1 + tabs.length) % tabs.length;
+          else if (event.key === 'Home') next = 0;
+          else if (event.key === 'End') next = tabs.length - 1;
+          if (next >= 0) {
+            event.preventDefault();
+            activate(next, true);
+            tabs[next].focus();
+          }
+        });
+      });
+    });
+  }
+
+  var FOCUS_KEY = 'lume-reading-focus';
+
+  function readFocusPref() {
+    try {
+      return window.sessionStorage.getItem(FOCUS_KEY) === '1';
+    } catch (error) {
+      return false;
+    }
+  }
+
+  function writeFocusPref(active) {
+    try {
+      window.sessionStorage.setItem(FOCUS_KEY, active ? '1' : '0');
+    } catch (error) {
+      /* ignore */
+    }
+  }
+
+  function applyReadingFocus(btn, active) {
+    root.classList.toggle('is-reading-focus', !!active);
+    if (!btn) return;
+    btn.classList.toggle('is-active', !!active);
+    btn.setAttribute('aria-pressed', active ? 'true' : 'false');
+    var labelEl = $('[data-reading-focus-label]', btn);
+    var enterText = label('focus-mode', 'Focus mode');
+    var exitText = label('exit-focus', 'Exit focus');
+    if (labelEl) labelEl.textContent = active ? exitText : enterText;
+    btn.setAttribute('aria-label', active ? exitText : enterText);
+  }
+
+  function initReadingFocus() {
+    var btn = $('[data-reading-focus]');
+    if (!btn) {
+      root.classList.remove('is-reading-focus');
+      return;
+    }
+
+    applyReadingFocus(btn, readFocusPref());
+
+    btn.addEventListener('click', function () {
+      var next = !root.classList.contains('is-reading-focus');
+      applyReadingFocus(btn, next);
+      writeFocusPref(next);
+      showToast(
+        next
+          ? label('focus-entered', 'Wide focus mode enabled')
+          : label('focus-exited', 'Standard layout restored')
+      );
+      requestScrollUpdate();
+    });
+  }
+
   var tocState = { links: [], headings: [], map: new Map() };
 
   function initTOC() {
@@ -2527,7 +2629,9 @@
     initCoverFallback();
     initOutdatedNotice();
     initCopyLink();
+    initReadingFocus();
     initTables();
+    initTabs();
     initMermaid();
     initCodeBlocks();
     initMath();

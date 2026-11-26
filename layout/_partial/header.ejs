@@ -87,8 +87,8 @@
     <% }); %>
   </nav>
   <div class="mobile-nav__foot">
-    <% if (travelling.enable) { %><a href="<%= travelling.url || 'https://www.travellings.cn/go.html' %>" target="_blank" rel="noopener noreferrer">🚂 开往</a><% } %>
-    <% if (randomPost.enable) { %><button type="button" data-random-post>🎲 随便逛逛</button><% } %>
-    <button type="button" data-search-open>🔍 搜索</button>
+    <% if (travelling.enable) { %><a href="<%= travelling.url || 'https://www.travellings.cn/go.html' %>" target="_blank" rel="noopener noreferrer"><%- lume_icon('train') %> 开往</a><% } %>
+    <% if (randomPost.enable) { %><button type="button" data-random-post><%- lume_icon('dice') %> 随便逛逛</button><% } %>
+    <button type="button" data-search-open><%- lume_icon('search') %> 搜索</button>
   </div>
 </aside>

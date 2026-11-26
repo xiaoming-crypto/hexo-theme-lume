@@ -42,7 +42,7 @@
         <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M18 5v14M6 6l9 6-9 6V6Z"/></svg>
       </button>
       <label class="capsule__vol">
-        <span aria-hidden="true">🔊</span>
+        <%- lume_icon('volume') %>
         <input type="range" min="0" max="100" value="70" step="1" data-music-volume aria-label="<%= __('music.volume') %>">
       </label>
       <a class="capsule__all" href="<%= url_for('/music/') %>" data-music-all><%= __('music.playlist') %></a>

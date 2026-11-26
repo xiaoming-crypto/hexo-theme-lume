@@ -44,7 +44,7 @@
 
   <% if (facts.length) { %>
   <div class="about__facts" data-reveal>
-    <p class="about__scrap-label" aria-hidden="true">📌 Quick Facts</p>
+    <p class="about__scrap-label" aria-hidden="true"><%- lume_icon('pin') %> Quick Facts</p>
     <ul class="about__fact-list">
       <% facts.forEach(function (fact, index) { %>
         <li class="about__fact" style="--rot: <%= rotations[index % rotations.length] %>; --i: <%= index %>">
@@ -72,7 +72,7 @@
     <aside class="about__aside">
       <% if (skills.length) { %>
       <div class="about__block" data-reveal>
-        <p class="about__block-label">🧩 Skills</p>
+        <p class="about__block-label"><%- lume_icon('grid') %> Skills</p>
         <ul class="skills">
           <% skills.forEach(function (skill) { %><li><%= skill %></li><% }) %>
         </ul>
@@ -81,7 +81,7 @@
 
       <% if (social.length) { %>
       <div class="about__block" data-reveal style="--i: 1">
-        <p class="about__block-label">🌍 Elsewhere</p>
+        <p class="about__block-label"><%- lume_icon('globe') %> Elsewhere</p>
         <ul class="about__social">
           <% social.forEach(function (item) { %>
             <li><a href="<%= url_for(item.url) %>" rel="noopener" target="_blank"><%= item.name %><span aria-hidden="true">↗</span></a></li>

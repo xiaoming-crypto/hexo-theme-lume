@@ -24,7 +24,7 @@
          data-reactions-enabled="<%= giscus.reactionsEnabled || '1' %>"
          data-input-position="<%= giscus.inputPosition || 'top' %>"
          data-theme="<%= giscus.theme || 'preferred_color_scheme' %>">
-  <h2 class="comments__title"><span aria-hidden="true">💬</span><%= __('post.comments') %></h2>
+  <h2 class="comments__title"><%- lume_icon('message') %><%= __('post.comments') %></h2>
   <div class="comments__mount" data-comments-mount></div>
 </section>
 <% } %>

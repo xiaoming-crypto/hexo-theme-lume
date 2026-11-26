@@ -48,7 +48,11 @@
       data-label-expand-code="<%= __('action.expandCode') %>"
       data-label-collapse-code="<%= __('action.collapseCode') %>"
       data-label-copy-link="<%= __('action.copyLink') %>"
-      data-label-link-copied="<%= __('action.linkCopied') %>">
+      data-label-link-copied="<%= __('action.linkCopied') %>"
+      data-label-focus-mode="<%= __('action.focusMode') %>"
+      data-label-exit-focus="<%= __('action.exitFocus') %>"
+      data-label-focus-entered="<%= __('action.focusEntered') %>"
+      data-label-focus-exited="<%= __('action.focusExited') %>">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
@@ -69,8 +73,7 @@
     })();
   </script>
   <%- partial('_partial/head', { pageData: pageData }) %>
-  <link rel="stylesheet" href="<%= url_for('/css/main.css') %>?v=<%= assetVer %>">
-  <link rel="stylesheet" href="<%= url_for('/css/pop.css') %>?v=<%= assetVer %>">
+  <link rel="stylesheet" href="<%= url_for('/css/lume.css') %>?v=<%= assetVer %>">
   <script defer src="<%= url_for('/js/extras.js') %>?v=<%= assetVer %>"></script>
   <script defer src="<%= url_for('/js/app.js') %>?v=<%= assetVer %>"></script>
 </head>
