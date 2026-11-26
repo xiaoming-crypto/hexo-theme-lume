@@ -51,6 +51,8 @@ hero:
 
 # 文章列表
 list:
+  # 首页文章列表列数：2 双列卡片 / 1 单列横排
+  columns: 2
   showExcerpt: true
   excerptLength: 120
   # 桌面端悬停时跟随光标的封面浮窗

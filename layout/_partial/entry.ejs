@@ -1,5 +1,6 @@
 <%
   const listOptions = theme.list || {};
+  const gridMode = typeof isGrid !== 'undefined' && !!isGrid;
   const categories = (post.categories && post.categories.toArray) ? post.categories.toArray() : [];
   const primaryCategory = categories.length ? categories[0] : null;
   const tags = (post.tags && post.tags.toArray) ? post.tags.toArray() : [];
@@ -9,8 +10,9 @@
   const cover = post.cover || '';
   const showThumb = listOptions.showThumb !== false && cover;
   const isSticky = Number(post.sticky) > 0;
+  const enablePeek = cover && listOptions.showCoverPeek !== false && !(gridMode && showThumb);
 %>
-<article class="entry<%= isSticky ? ' is-sticky' : '' %>"<% if (cover && listOptions.showCoverPeek !== false) { %> data-cover="<%= cover %>"<% } %> data-reveal style="--i: <%= Math.min(index, 7) %>">
+<article class="entry<%= isSticky ? ' is-sticky' : '' %><%= showThumb ? '' : ' entry--no-thumb' %>"<% if (enablePeek) { %> data-cover="<%= cover %>"<% } %> data-reveal style="--i: <%= Math.min(index, 7) %>">
   <a class="entry__link" href="<%= url_for(post.path) %>">
     <span class="entry__index" aria-hidden="true"><%= order %></span>
 
@@ -36,12 +38,14 @@
         <span class="entry__tags">
           <% tags.slice(0, 3).forEach(function (tag) { %><span class="pill">#<%= tag.name %></span><% }); %>
         </span>
+      <% } else if (gridMode) { %>
+        <span class="entry__tags" aria-hidden="true"></span>
       <% } %>
     </span>
 
     <% if (showThumb) { %>
       <span class="entry__thumb" aria-hidden="true">
-        <img src="<%= cover %>" alt="" width="116" height="88" loading="lazy" decoding="async">
+        <img src="<%= cover %>" alt="" width="<%= gridMode ? 480 : 116 %>" height="<%= gridMode ? 270 : 88 %>" loading="lazy" decoding="async">
       </span>
     <% } %>
 

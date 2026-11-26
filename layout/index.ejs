@@ -11,6 +11,8 @@
   const since = years.length ? years[0] : '';
   const randomPost = theme.randomPost || {};
   const music = theme.music || {};
+  const listOptions = theme.list || {};
+  const isGrid = listOptions.columns !== 1;
   const featured = isFirst && page.posts && page.posts.length
     ? (page.posts.toArray ? page.posts.toArray()[0] : page.posts.data[0])
     : null;
@@ -95,9 +97,9 @@
     <span class="section-head__rule" aria-hidden="true"></span>
   </header>
 
-  <div class="entries">
+  <div class="entries<%= isGrid ? ' entries--grid' : '' %>">
     <% page.posts.each(function (post, index) { %>
-      <%- partial('_partial/entry', { post: post, index: index }) %>
+      <%- partial('_partial/entry', { post: post, index: index, isGrid: isGrid }) %>
     <% }) %>
   </div>
 

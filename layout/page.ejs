@@ -47,16 +47,17 @@
     <div class="page-lead" data-reveal><%- page.content %></div>
   <% } %>
 
-  <div class="tag-cloud">
+  <ul class="tag-cloud">
     <% allTags.forEach(function (tag, index) { %>
-      <a class="tag-cloud__item" href="<%= url_for(tag.path) %>"
-         style="--w: <%= ((tag.length / maxTagCount) * 100).toFixed(0) %>; --i: <%= Math.min(index, 10) %>"
-         data-reveal>
-        <span><%= tag.name %></span>
-        <sup><%= tag.length %></sup>
-      </a>
+      <li class="tag-cloud__wrap" data-reveal style="--i: <%= Math.min(index, 10) %>">
+        <a class="tag-cloud__item" href="<%= url_for(tag.path) %>"
+           style="--w: <%= ((tag.length / maxTagCount) * 100).toFixed(0) %>">
+          <span class="tag-cloud__name"><%= tag.name %></span>
+          <sup class="tag-cloud__count"><%= tag.length %></sup>
+        </a>
+      </li>
     <% }) %>
-  </div>
+  </ul>
 </section>
 <% } else { %>
 <article class="page<%= page.cover ? ' page--cover' : '' %>">

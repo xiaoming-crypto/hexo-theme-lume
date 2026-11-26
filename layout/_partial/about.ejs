@@ -10,7 +10,6 @@
   const roleItems = role ? String(role).split(/[·•,，/|]/).map(function (item) { return item.trim(); }).filter(Boolean) : [];
   const hasAside = skills.length || social.length;
   const hasContent = page.content && page.content.trim();
-  const rotations = ['-1.6deg', '1.2deg', '-0.8deg'];
 %>
 <section class="about">
   <header class="about__hero" data-reveal>
@@ -47,7 +46,7 @@
     <p class="about__scrap-label" aria-hidden="true"><%- lume_icon('pin') %> Quick Facts</p>
     <ul class="about__fact-list">
       <% facts.forEach(function (fact, index) { %>
-        <li class="about__fact" style="--rot: <%= rotations[index % rotations.length] %>; --i: <%= index %>">
+        <li class="about__fact" style="--i: <%= index %>">
           <span><%= fact.label %></span>
           <strong><%= fact.value %></strong>
         </li>

@@ -440,7 +440,7 @@
   function syncPlaying(playing) {
     var capsule = $('[data-music-capsule]');
     if (capsule) capsule.classList.toggle('is-playing', playing);
-    $$('.music-now').forEach(function (element) {
+    $$('.music-now, [data-music-page]').forEach(function (element) {
       element.classList.toggle('is-playing', playing);
     });
 
@@ -448,14 +448,13 @@
       button.setAttribute('aria-label', playing ? music.labels.pause : music.labels.play);
       button.setAttribute('aria-pressed', playing ? 'true' : 'false');
     });
-
-    var pill = $('[data-music-capsule]');
-    if (pill) pill.classList.toggle('is-playing', playing);
   }
 
   function syncProgress(current, duration) {
     var ratio = duration > 0 ? clamp(current / duration, 0, 1) : 0;
+    var pct = (ratio * 100).toFixed(2) + '%';
     $$('[data-music-progress]').forEach(function (input) {
+      input.style.setProperty('--pct', pct);
       if (document.activeElement === input) return;
       input.value = String(Math.round(ratio * 1000));
     });
@@ -467,14 +466,22 @@
   }
 
   function syncVolumeUI() {
+    var pct = Math.round(music.volume * 100) + '%';
     $$('[data-music-volume]').forEach(function (input) {
       input.value = String(Math.round(music.volume * 100));
+      input.style.setProperty('--pct', pct);
     });
   }
 
   function syncListCurrent() {
     $$('.music-list__item').forEach(function (item) {
-      item.classList.toggle('is-current', item.getAttribute('data-index') === String(music.index));
+      var active = item.getAttribute('data-index') === String(music.index);
+      item.classList.toggle('is-current', active);
+      var btn = $('[data-track]', item);
+      if (btn) {
+        if (active) btn.setAttribute('aria-current', 'true');
+        else btn.removeAttribute('aria-current');
+      }
     });
   }
 
@@ -513,17 +520,29 @@
 
     music.list.forEach(function (song, index) {
       var item = document.createElement('li');
-      item.className = 'music-list__item' + (index === music.index ? ' is-current' : '');
+      var isCurrent = index === music.index;
+      item.className = 'music-list__item' + (isCurrent ? ' is-current' : '');
       item.setAttribute('data-index', String(index));
 
       var button = document.createElement('button');
       button.type = 'button';
       button.setAttribute('data-track', String(index));
       button.setAttribute('aria-label', music.labels.play + ' ' + song.name);
+      if (isCurrent) button.setAttribute('aria-current', 'true');
 
       var number = document.createElement('span');
       number.className = 'music-list__num';
-      number.textContent = String(index + 1).padStart(2, '0');
+      var idxSpan = document.createElement('span');
+      idxSpan.className = 'music-list__idx';
+      idxSpan.textContent = String(index + 1).padStart(2, '0');
+      var eqSpan = document.createElement('span');
+      eqSpan.className = 'music-list__eq';
+      eqSpan.setAttribute('aria-hidden', 'true');
+      eqSpan.appendChild(document.createElement('i'));
+      eqSpan.appendChild(document.createElement('i'));
+      eqSpan.appendChild(document.createElement('i'));
+      number.appendChild(idxSpan);
+      number.appendChild(eqSpan);
 
       var cover;
       if (song.pic) {
@@ -539,6 +558,7 @@
       }
 
       var meta = document.createElement('span');
+      meta.className = 'music-list__meta';
       var title = document.createElement('span');
       title.className = 'music-list__title';
       title.textContent = song.name;
@@ -548,19 +568,26 @@
       meta.appendChild(title);
       meta.appendChild(artist);
 
+      var tail = document.createElement('span');
+      tail.className = 'music-list__tail';
       var duration = document.createElement('span');
       duration.className = 'music-list__dur';
       var raw = parseFloat(song.duration);
       if (isFinite(raw) && raw > 0) {
         duration.textContent = formatTime(raw > 10000 ? raw / 1000 : raw);
       } else {
-        duration.textContent = '·';
+        duration.textContent = '';
       }
+      var playInd = document.createElement('span');
+      playInd.className = 'music-list__play-ind';
+      playInd.setAttribute('aria-hidden', 'true');
+      tail.appendChild(duration);
+      tail.appendChild(playInd);
 
       button.appendChild(number);
       button.appendChild(cover);
       button.appendChild(meta);
-      button.appendChild(duration);
+      button.appendChild(tail);
       item.appendChild(button);
       fragment.appendChild(item);
     });
@@ -606,6 +633,7 @@
 
     var audio = ensureAudio();
     syncPlaying(!audio.paused);
+    syncVolumeUI();
 
     if (!$('[data-music-page]')) {
       var cached = readPlaylistCache();

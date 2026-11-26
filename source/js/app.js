@@ -368,11 +368,25 @@
   /* Reveal --------------------------------------------------- */
   var revealObserver = null;
 
+  function clearInstantReveal(elements) {
+    if (!elements || !elements.length) return;
+    window.requestAnimationFrame(function () {
+      window.requestAnimationFrame(function () {
+        elements.forEach(function (element) {
+          element.classList.remove('is-instant');
+        });
+      });
+    });
+  }
+
   function revealAll(scope) {
+    var instantEls = [];
     $$('[data-reveal]', scope).forEach(function (element) {
       element.classList.add('is-in', 'is-instant');
       if (revealObserver) revealObserver.unobserve(element);
+      instantEls.push(element);
     });
+    clearInstantReveal(instantEls);
   }
 
   function isNearViewportForReveal(element) {
@@ -414,14 +428,17 @@
       );
     }
 
+    var instantEls = [];
     $$('[data-reveal]', area).forEach(function (element) {
       if (element.classList.contains('is-in')) return;
       if (isNearViewportForReveal(element)) {
         element.classList.add('is-in', 'is-instant');
+        instantEls.push(element);
         return;
       }
       revealObserver.observe(element);
     });
+    clearInstantReveal(instantEls);
   }
 
   /* Ambient infinite animation pause ------------------------- */
@@ -1593,8 +1610,58 @@
     activeHeading: null,
     list: null,
     indicator: null,
-    readyRaf: 0
+    readyRaf: 0,
+    lockTarget: null,
+    lockTop: 0,
+    lockUntil: 0,
+    lockTimer: 0,
+    lockListenersBound: false
   };
+
+  function clearTOCLock() {
+    if (tocState.lockTimer) {
+      window.clearTimeout(tocState.lockTimer);
+      tocState.lockTimer = 0;
+    }
+    tocState.lockTarget = null;
+    tocState.lockTop = 0;
+    tocState.lockUntil = 0;
+  }
+
+  function bindTOCLockCancelOnce() {
+    if (tocState.lockListenersBound) return;
+    tocState.lockListenersBound = true;
+    var cancelIfActive = function () {
+      if (tocState.lockTarget) clearTOCLock();
+    };
+    window.addEventListener('wheel', cancelIfActive, { passive: true });
+    window.addEventListener('touchstart', cancelIfActive, { passive: true });
+    window.addEventListener('keydown', function (event) {
+      if (!tocState.lockTarget) return;
+      if (
+        event.key === 'ArrowUp' ||
+        event.key === 'ArrowDown' ||
+        event.key === 'PageUp' ||
+        event.key === 'PageDown' ||
+        event.key === 'Home' ||
+        event.key === 'End' ||
+        event.key === ' '
+      ) {
+        clearTOCLock();
+      }
+    });
+    if ('onscrollend' in window) {
+      window.addEventListener(
+        'scrollend',
+        function () {
+          if (tocState.lockTarget && Math.abs(window.pageYOffset - tocState.lockTop) <= 8) {
+            clearTOCLock();
+          }
+        },
+        { passive: true }
+      );
+    }
+  }
 
   function updateTOCIndicator(instant) {
     var list = tocState.list;
@@ -1640,6 +1707,7 @@
   }
 
   function initTOC() {
+    clearTOCLock();
     var asideToc = $('.post-aside__inner > .toc');
     window.cancelAnimationFrame(tocState.readyRaf);
     tocState.list = asideToc || null;
@@ -1738,6 +1806,16 @@
     var headings = tocState.headings;
     if (!headings.length) return;
 
+    if (tocState.lockTarget) {
+      if (Date.now() < tocState.lockUntil) {
+        if (Math.abs(window.pageYOffset - tocState.lockTop) <= 4) {
+          clearTOCLock();
+        }
+        return;
+      }
+      clearTOCLock();
+    }
+
     var offset = 150;
     var active = headings[0];
 
@@ -1777,12 +1855,27 @@
     var offset = parseInt(window.getComputedStyle(target).scrollMarginTop, 10);
     if (!offset || isNaN(offset)) offset = 104;
     var top = target.getBoundingClientRect().top + window.pageYOffset - offset;
-    window.scrollTo({ top: Math.max(0, top), behavior: reduceMotion ? 'auto' : 'smooth' });
-    tocActivate(target);
+    var doc = document.documentElement;
+    var maxScroll = Math.max(0, doc.scrollHeight - (window.innerHeight || doc.clientHeight || 0));
+    var clampedTop = Math.min(Math.max(0, top), maxScroll);
+    if (tocState.map && tocState.map.has(target)) {
+      if (!reduceMotion && Math.abs(window.pageYOffset - clampedTop) > 4) {
+        clearTOCLock();
+        tocState.lockTarget = target;
+        tocState.lockTop = clampedTop;
+        tocState.lockUntil = Date.now() + 1100;
+        tocState.lockTimer = window.setTimeout(clearTOCLock, 1150);
+      } else {
+        clearTOCLock();
+      }
+      tocActivate(target);
+    }
+    window.scrollTo({ top: clampedTop, behavior: reduceMotion ? 'auto' : 'smooth' });
     return true;
   }
 
   function initAnchorScroll() {
+    bindTOCLockCancelOnce();
     document.addEventListener('click', function (event) {
       if (event.defaultPrevented) return;
       if (event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
@@ -2680,10 +2773,27 @@
     nav.classList.add('has-pill');
   }
 
+  function normalizeNavPath(inputUrl) {
+    try {
+      var parsedUrl = new URL(inputUrl, window.location.href);
+      return '/' + parsedUrl.pathname.replace(/index\.html$/, '').replace(/^\/+/, '');
+    } catch (error) {
+      var raw = String(inputUrl || '');
+      return '/' + raw.replace(/index\.html$/, '').replace(/^\/+/, '');
+    }
+  }
+
   function syncNav(options) {
-    var main = document.getElementById('main');
-    var raw = main ? main.getAttribute('data-path') || '' : '';
-    var path = '/' + raw.replace(/index\.html$/, '').replace(/^\/+/, '');
+    options = options || {};
+    var path = options.path;
+    if (!path) {
+      var main = document.getElementById('main');
+      var raw = main ? main.getAttribute('data-path') || '' : '';
+      path = '/' + raw.replace(/index\.html$/, '').replace(/^\/+/, '');
+    }
+
+    var siteNav = $('[data-site-nav]');
+    var activeDesktopLink = null;
 
     $$('.nav-link').forEach(function (link) {
       var target = link.getAttribute('data-nav-path') || '/';
@@ -2692,9 +2802,13 @@
       link.classList.toggle('is-active', active);
       if (active) link.setAttribute('aria-current', 'page');
       else link.removeAttribute('aria-current');
+      if (active && siteNav && siteNav.contains(link)) {
+        activeDesktopLink = link;
+      }
     });
 
     updateNavPill(options);
+    return activeDesktopLink;
   }
 
   function focusHeading(main) {
@@ -2743,6 +2857,17 @@
       }
     }
 
+    var siteNav = $('[data-site-nav]');
+    var prevNavLink = siteNav ? $('.nav-link[aria-current="page"]', siteNav) : null;
+    var nextNavLink = syncNav({ path: normalizeNavPath(url) });
+    var isNavTabSwitch = !!(
+      prevNavLink &&
+      nextNavLink &&
+      prevNavLink !== nextNavLink &&
+      siteNav &&
+      siteNav.offsetParent !== null
+    );
+
     progressBar.start();
 
     function applySwap(parsed, newMain, targetScroll, useVT) {
@@ -2761,7 +2886,7 @@
       root.style.scrollBehavior = '';
       root.classList.remove('is-leaving');
 
-      initPage({ skipNav: useVT });
+      initPage({ skipNav: false });
       if (targetScroll > 0) {
         window.requestAnimationFrame(function () {
           if (seq === navSeq) {
@@ -2796,6 +2921,7 @@
 
         var targetScroll = options.scroll || 0;
         var canVT =
+          !isNavTabSwitch &&
           !reduceMotion &&
           !document.hidden &&
           flags.viewTransitions &&
@@ -2831,7 +2957,6 @@
               if (activeViewTransition === vt) activeViewTransition = null;
               if (currentVtId === vtSeq) root.classList.remove('nav-vt');
               if (seq === navSeq) {
-                syncNav();
                 updateTOCIndicator(true);
               }
             };
@@ -2841,7 +2966,6 @@
             root.classList.remove('nav-vt');
             activeViewTransition = null;
             if (swapped) {
-              syncNav();
               updateTOCIndicator(true);
             } else {
               runSwap(false);
@@ -2850,15 +2974,15 @@
           }
         }
 
-        root.classList.add('is-leaving');
-
-        return wait(reduceMotion ? 0 : 150).then(function () {
-          if (seq !== navSeq) return;
-          applySwap(parsed, newMain, targetScroll, false);
-        });
+        root.classList.remove('is-leaving');
+        applySwap(parsed, newMain, targetScroll, false);
       })
       .catch(function (error) {
-        if (seq !== navSeq || (error && error.name === 'AbortError')) return;
+        if (error && error.name === 'AbortError') {
+          if (seq === navSeq) syncNav();
+          return;
+        }
+        if (seq !== navSeq) return;
         progressBar.cancel();
         root.classList.remove('is-leaving');
         root.classList.remove('nav-vt');
@@ -2897,6 +3021,16 @@
     });
 
     document.addEventListener(
+      'pointerdown',
+      function (event) {
+        var link = event.target.closest ? event.target.closest('a[href]') : null;
+        if (!link || !isEligible(link)) return;
+        prefetch(link.href);
+      },
+      { passive: true }
+    );
+
+    document.addEventListener(
       'pointerover',
       function (event) {
         var link = event.target.closest ? event.target.closest('a[href]') : null;
@@ -2905,7 +3039,7 @@
         window.clearTimeout(prefetchTimer);
         prefetchTimer = window.setTimeout(function () {
           prefetch(href);
-        }, 90);
+        }, 40);
       },
       { passive: true }
     );

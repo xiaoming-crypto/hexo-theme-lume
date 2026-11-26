@@ -6,7 +6,7 @@ Lume 用「贴纸手账」重塑个人博客的秩序感与人情味：奶油纸
 
 在鲜明美学之外，Lume 坚持**零前端构建依赖、零运行时框架开销**的设计原则：全站采用单一 8 层原生样式表 [lume.css](./source/css/lume.css) 与双文件轻量原生脚本，同时提供 PJAX + 渐进 View Transitions 路由、Search 2.0、代码块 2.0、原生 `<dialog>` 图片灯箱与专注阅读、按需懒加载 KaTeX / Mermaid、Twikoo / Giscus / Waline 三端评论、音乐胶囊、友链钓鱼与 100% 中英双语支持。
 
-- **版本**：`1.0.0`（从旧版迁移请查阅 [UPGRADE.md](./UPGRADE.md)）
+- **版本**：`1.1.0`（从旧版迁移请查阅 [UPGRADE.md](./UPGRADE.md)）
 - **适配**：Hexo 7.x / 8.x，Node.js 18+
 - **预览**：`hexo clean && hexo server` 后访问 `http://localhost:4000`
 - **许可证**：[MIT](./LICENSE)

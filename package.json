@@ -1,6 +1,6 @@
 {
   "name": "hexo-theme-lume",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "Lume — a playful sticker-scrapbook Hexo theme with music, friends, and springy motion.",
   "scripts": {
     "qa": "node tools/qa.mjs",
