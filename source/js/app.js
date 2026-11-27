@@ -1269,16 +1269,36 @@
       var actions = document.createElement('div');
       actions.className = 'code-block__actions';
 
+      var WRAP_ICON =
+        '<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">' +
+        '<path d="M2.5 4h11M2.5 8h8a2.25 2.25 0 0 1 0 4.5H7.5"/>' +
+        '<path d="m9.5 10.5-2 2 2 2"/>' +
+        '</svg>';
+
       var wrapBtn = document.createElement('button');
       wrapBtn.type = 'button';
       wrapBtn.className = 'code-block__wrap';
       wrapBtn.setAttribute('aria-pressed', flags.codeWrap ? 'true' : 'false');
-      wrapBtn.textContent = flags.codeWrap ? unwrapLabel : wrapLabel;
+      wrapBtn.innerHTML =
+        '<span class="code-block__wrap-icon" aria-hidden="true">' +
+        WRAP_ICON +
+        '</span><span class="code-block__wrap-label"></span>';
+      var wrapBtnLabel = wrapBtn.querySelector('.code-block__wrap-label');
+      wrapBtnLabel.textContent = flags.codeWrap ? unwrapLabel : wrapLabel;
+      var wrapTimer = null;
       wrapBtn.addEventListener('click', function () {
         var next = !block.classList.contains('is-wrapped');
         block.classList.toggle('is-wrapped', next);
         wrapBtn.setAttribute('aria-pressed', next ? 'true' : 'false');
-        wrapBtn.textContent = next ? unwrapLabel : wrapLabel;
+        wrapBtnLabel.textContent = next ? unwrapLabel : wrapLabel;
+        if (wrapTimer) window.clearTimeout(wrapTimer);
+        wrapBtn.classList.remove('is-toggling');
+        void wrapBtn.offsetWidth;
+        wrapBtn.classList.add('is-toggling');
+        wrapTimer = window.setTimeout(function () {
+          wrapBtn.classList.remove('is-toggling');
+          wrapTimer = null;
+        }, 460);
       });
       actions.appendChild(wrapBtn);
 
@@ -1628,6 +1648,15 @@
     tocState.lockUntil = 0;
   }
 
+  function scheduleTOCLockRelease(delay) {
+    if (tocState.lockTimer) {
+      window.clearTimeout(tocState.lockTimer);
+      tocState.lockTimer = 0;
+    }
+    if (!tocState.lockTarget) return;
+    tocState.lockTimer = window.setTimeout(clearTOCLock, delay);
+  }
+
   function bindTOCLockCancelOnce() {
     if (tocState.lockListenersBound) return;
     tocState.lockListenersBound = true;
@@ -1654,9 +1683,7 @@
       window.addEventListener(
         'scrollend',
         function () {
-          if (tocState.lockTarget && Math.abs(window.pageYOffset - tocState.lockTop) <= 8) {
-            clearTOCLock();
-          }
+          if (tocState.lockTarget) scheduleTOCLockRelease(80);
         },
         { passive: true }
       );
@@ -1808,9 +1835,7 @@
 
     if (tocState.lockTarget) {
       if (Date.now() < tocState.lockUntil) {
-        if (Math.abs(window.pageYOffset - tocState.lockTop) <= 4) {
-          clearTOCLock();
-        }
+        scheduleTOCLockRelease(140);
         return;
       }
       clearTOCLock();
@@ -1863,8 +1888,8 @@
         clearTOCLock();
         tocState.lockTarget = target;
         tocState.lockTop = clampedTop;
-        tocState.lockUntil = Date.now() + 1100;
-        tocState.lockTimer = window.setTimeout(clearTOCLock, 1150);
+        tocState.lockUntil = Date.now() + 3500;
+        scheduleTOCLockRelease(400);
       } else {
         clearTOCLock();
       }
